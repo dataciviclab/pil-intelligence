@@ -1,0 +1,412 @@
+{
+  "metadata_schema_version": 1,
+  "timestamp_utc": "2026-09-12T12:29:06.713021+00:00",
+  "toolkit_version": "1.51.0",
+  "layer": "mart",
+  "dataset": "pil_intelligence",
+  "year": 2026,
+  "config_hash": "2a120efbb684e7efee7dc1c544a5901e0a6c36a3f98b1043989729efd5d10c05",
+  "inputs": [],
+  "outputs": [
+    {
+      "file": "mart_hub.parquet",
+      "sha256": "702b6f0bd762306f3cc6f8ca190cd86d1d2121a95128dcfe70ac5e93ac6328aa",
+      "bytes": 585482
+    },
+    {
+      "file": "mart_settori.parquet",
+      "sha256": "14bba4ba3c4628668540b92d0fa7980bfba1d0647f39a9afc422a83268c79fe7",
+      "bytes": 223491
+    },
+    {
+      "file": "mart_debito_fisco.parquet",
+      "sha256": "c3fb3115189e934169e0f20286e0f021b5322ed59297228cdaba7e0dcee6a976",
+      "bytes": 10515
+    },
+    {
+      "file": "mart_trend_integrato.parquet",
+      "sha256": "498cbec37bb2f1c2bcacd98f38174b227003e2c2722a3621bf494223a3921136",
+      "bytes": 63634
+    },
+    {
+      "file": "mart_domanda.parquet",
+      "sha256": "2755185871a5ef7a8cdb79054a45ae2656db08b38fb9759f0fb35f3face63b27",
+      "bytes": 55411
+    },
+    {
+      "file": "mart_trimestrale.parquet",
+      "sha256": "b0a7a4c01e691dbe1b95bfdff96208d4da515ecaf5f05e46d23695938590cb08",
+      "bytes": 2467
+    }
+  ],
+  "output_paths": [
+    "data/mart/pil_intelligence/2026/mart_hub.parquet",
+    "data/mart/pil_intelligence/2026/mart_settori.parquet",
+    "data/mart/pil_intelligence/2026/mart_debito_fisco.parquet",
+    "data/mart/pil_intelligence/2026/mart_trend_integrato.parquet",
+    "data/mart/pil_intelligence/2026/mart_domanda.parquet",
+    "data/mart/pil_intelligence/2026/mart_trimestrale.parquet"
+  ],
+  "template_ctx": {
+    "year": 2026,
+    "dataset": "pil_intelligence"
+  },
+  "tables": [
+    {
+      "name": "mart_hub",
+      "sql": "sql/mart_hub.sql",
+      "sql_rendered": "data/mart/pil_intelligence/2026/_run/01_mart_hub_rendered.sql",
+      "output": "data/mart/pil_intelligence/2026/mart_hub.parquet"
+    },
+    {
+      "name": "mart_settori",
+      "sql": "sql/mart_settori.sql",
+      "sql_rendered": "data/mart/pil_intelligence/2026/_run/02_mart_settori_rendered.sql",
+      "output": "data/mart/pil_intelligence/2026/mart_settori.parquet"
+    },
+    {
+      "name": "mart_debito_fisco",
+      "sql": "sql/mart_debito_fisco.sql",
+      "sql_rendered": "data/mart/pil_intelligence/2026/_run/03_mart_debito_fisco_rendered.sql",
+      "output": "data/mart/pil_intelligence/2026/mart_debito_fisco.parquet"
+    },
+    {
+      "name": "mart_trend_integrato",
+      "sql": "sql/mart_trend_integrato.sql",
+      "sql_rendered": "data/mart/pil_intelligence/2026/_run/04_mart_trend_integrato_rendered.sql",
+      "output": "data/mart/pil_intelligence/2026/mart_trend_integrato.parquet"
+    },
+    {
+      "name": "mart_domanda",
+      "sql": "sql/mart_domanda.sql",
+      "sql_rendered": "data/mart/pil_intelligence/2026/_run/05_mart_domanda_rendered.sql",
+      "output": "data/mart/pil_intelligence/2026/mart_domanda.parquet"
+    },
+    {
+      "name": "mart_trimestrale",
+      "sql": "sql/mart_trimestrale.sql",
+      "sql_rendered": "data/mart/pil_intelligence/2026/_run/06_mart_trimestrale_rendered.sql",
+      "output": "data/mart/pil_intelligence/2026/mart_trimestrale.parquet"
+    }
+  ],
+  "hierarchy_enabled": false,
+  "clean_input_profile": null,
+  "table_profiles": {
+    "mart_hub": {
+      "row_count": 32500,
+      "columns": [
+        {
+          "name": "year",
+          "type": "BIGINT"
+        },
+        {
+          "name": "geo",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "geo_label_en",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "nuts_level",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "country",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "nuts_parent_code",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "nuts_parent_label_en",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "pil_procapite_eur",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "gva_totale_mio",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "occupati_migliaia",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "produttivita_lavoro_eur",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "presenze_turistiche_migliaia",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "reati_per_100k",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "gfcf_totale_mio",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "gva_per_lavoratore_eur",
+          "type": "DOUBLE"
+        }
+      ]
+    },
+    "mart_settori": {
+      "row_count": 37800,
+      "columns": [
+        {
+          "name": "year",
+          "type": "INTEGER"
+        },
+        {
+          "name": "geo",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "geo_label_en",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "country",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "nace_r2",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "nace_r2_label_en",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "gva_valore_mio",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "gva_totale_mio",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "share_pct",
+          "type": "DOUBLE"
+        }
+      ]
+    },
+    "mart_debito_fisco": {
+      "row_count": 165,
+      "columns": [
+        {
+          "name": "anno",
+          "type": "INTEGER"
+        },
+        {
+          "name": "pil_nominale_mln",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "debito_pil_pct",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "stock_mln_eur",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "saldo_primario_pct",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "interessi_pct_pil",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "spread_i_g",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "crescita_pil_reale_pct",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "inflazione_pct",
+          "type": "DOUBLE"
+        }
+      ]
+    },
+    "mart_trend_integrato": {
+      "row_count": 1300,
+      "columns": [
+        {
+          "name": "geo",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "geo_label_en",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "nuts_level",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "country",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "pil_first_year",
+          "type": "BIGINT"
+        },
+        {
+          "name": "pil_last_year",
+          "type": "BIGINT"
+        },
+        {
+          "name": "years_observed",
+          "type": "BIGINT"
+        },
+        {
+          "name": "pil_first",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "pil_last",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "pil_delta_abs",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "pil_delta_pct",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "pil_cagr_pct",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "gva_first",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "gva_last",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "gva_delta_pct",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "emp_first",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "emp_last",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "emp_delta_pct",
+          "type": "DOUBLE"
+        }
+      ]
+    },
+    "mart_domanda": {
+      "row_count": 2040,
+      "columns": [
+        {
+          "name": "year",
+          "type": "BIGINT"
+        },
+        {
+          "name": "country",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "pil",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "consumi_finali",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "gfcf",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "formazione_capitale",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "export",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "import",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "domanda_interna",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "errore_omissione",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "consumi_pct_pil",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "gfcf_pct_pil",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "export_pct_pil",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "import_pct_pil",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "saldo_commerciale_pct_pil",
+          "type": "DOUBLE"
+        }
+      ]
+    },
+    "mart_trimestrale": {
+      "row_count": 776,
+      "columns": [
+        {
+          "name": "year",
+          "type": "INTEGER"
+        },
+        {
+          "name": "quarter",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "na_item",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "na_item_label_en",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "value",
+          "type": "DOUBLE"
+        }
+      ]
+    }
+  },
+  "transition_profiles": [],
+  "source_id": "dataciviclab_composite"
+}

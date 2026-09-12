@@ -1,0 +1,49 @@
+root: "out"
+schema_version: 1
+
+dataset:
+  name: "pil_intelligence"
+  source_id: "dataciviclab_composite"
+  tags: [economia, pil, gdp, intelligence, nuts3, nace, compose]
+  category: economia
+  description: "PIL intelligence hub: indicatori cross per geo x year, GVA per settore, debito/fisco Italia, trend integrato"
+  years: [2026]
+
+# Mart-only compose: SQL legge direttamente da GCS HTTPS.
+# Support placeholder — necessario per il validator toolkit (richiede raw.sources o support).
+# CI runna toolkit run mart → committa i parquet nel repo. Dashboard legge dal repo.
+
+support:
+  - name: _placeholder
+    config: "../../eurostat/datasets/eurostat-gdp-nuts3/dataset.yml"
+    years: [2026]
+
+mart:
+  tables:
+    - name: "mart_hub"
+      sql: "sql/mart_hub.sql"
+    - name: "mart_settori"
+      sql: "sql/mart_settori.sql"
+    - name: "mart_debito_fisco"
+      sql: "sql/mart_debito_fisco.sql"
+    - name: "mart_trend_integrato"
+      sql: "sql/mart_trend_integrato.sql"
+    - name: "mart_domanda"
+      sql: "sql/mart_domanda.sql"
+    - name: "mart_trimestrale"
+      sql: "sql/mart_trimestrale.sql"
+  required_tables:
+    - "mart_hub"
+    - "mart_settori"
+    - "mart_debito_fisco"
+    - "mart_trend_integrato"
+    - "mart_domanda"
+  validate:
+    table_rules:
+      mart_hub: { min_rows: 500 }
+      mart_settori: { min_rows: 5000 }
+      mart_debito_fisco: { min_rows: 20 }
+      mart_trend_integrato: { min_rows: 100 }
+
+validation:
+  fail_on_error: true
