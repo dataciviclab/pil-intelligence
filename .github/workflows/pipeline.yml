@@ -36,7 +36,8 @@ jobs:
       - uses: dataciviclab/.github/actions/python-setup@main
 
       - name: Run compose
-        run: toolkit run mart -c dataset.yml -y 2026
+        run: |
+          pwd && ls dataset.yml && toolkit run mart -c "$GITHUB_WORKSPACE/dataset.yml" -y 2026
 
       - name: Commit parquet
         run: |
