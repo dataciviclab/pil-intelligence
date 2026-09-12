@@ -34,8 +34,6 @@ jobs:
       - uses: actions/checkout@v7
 
       - uses: dataciviclab/.github/actions/python-setup@main
-        with:
-          extra-packages: "dataciviclab-toolkit @ git+https://github.com/dataciviclab/toolkit.git@v1.50.0"
 
       - name: Run compose
         run: toolkit run mart -c dataset.yml -y 2026
