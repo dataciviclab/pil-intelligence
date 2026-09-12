@@ -10,13 +10,7 @@ dataset:
   years: [2026]
 
 # Mart-only compose: SQL legge direttamente da GCS HTTPS.
-# Support placeholder — necessario per il validator toolkit (richiede raw.sources o support).
 # CI runna toolkit run mart → committa i parquet nel repo. Dashboard legge dal repo.
-
-support:
-  - name: _placeholder
-    config: "../../eurostat/datasets/eurostat-gdp-nuts3/dataset.yml"
-    years: [2026]
 
 mart:
   tables:
