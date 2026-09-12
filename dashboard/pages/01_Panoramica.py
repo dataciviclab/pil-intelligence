@@ -97,7 +97,7 @@ with col_left:
     st.plotly_chart(fig, use_container_width=True)
 
 with col_right:
-    st.subheader("Composizione domanda")
+    st.subheader("Composizione consumi/export/import")
     if len(d_curr) > 0:
         row = d_curr.iloc[0]
         labels = ["Consumi", "GFCF", "Export", "Import"]
@@ -108,6 +108,8 @@ with col_right:
         fig = px.pie(names=labels, values=values, hole=0.4)
         fig.update_layout(height=350, margin=dict(t=10), showlegend=True)
         st.plotly_chart(fig, use_container_width=True)
+        st.caption("Percentuali sul totale dei 4 flussi. Export/PIL: {:.1f}%".format(
+            row.get("export_pct_pil", 0) or 0))
     else:
         st.info("Dati domanda non disponibili")
 
