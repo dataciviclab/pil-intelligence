@@ -33,6 +33,12 @@ emp_prev = _nat(prev, "occupati_migliaia")
 gva = _nat(latest, "gva_totale_mio")
 gva_prev = _nat(prev, "gva_totale_mio")
 
+# Tasso occupazione e produttività ponderati
+tasso_occ = _weighted_avg(latest, "tasso_occupazione_pct", "popolazione")
+tasso_occ_prev = _weighted_avg(prev, "tasso_occupazione_pct", "popolazione")
+prod = _weighted_avg(latest, "produttivita_lavoro_eur", "popolazione")
+prod_prev = _weighted_avg(prev, "produttivita_lavoro_eur", "popolazione")
+
 # PIL pro-capite ponderato per popolazione
 pil_procap = _weighted_avg(latest, "pil_procapite_eur", "popolazione")
 pil_procap_prev = _weighted_avg(prev, "pil_procapite_eur", "popolazione")
@@ -46,45 +52,57 @@ deb_prev = debito[debito["anno"] == deb_latest - 1]
 d_curr = domanda[domanda["year"] == latest]
 d_prev = domanda[domanda["year"] == prev]
 
-# --- KPI Cards ---
-c1, c2, c3, c4 = st.columns(4)
+# --- KPI Cards: 3 righe x 3, raggruppati per tema ---
 
 def _delta(curr_v, prev_v):
     if curr_v is None or prev_v is None or prev_v == 0:
         return None
     return f"{(curr_v/prev_v - 1)*100:+.1f}%"
 
+# Riga 1: Economia
+st.caption("Economia")
+c1, c2, c3 = st.columns(3)
 c1.metric("PIL pro-capite", fmt_eur(pil_procap), _delta(pil_procap, pil_procap_prev), help=f"Anno {latest} · media ponderata per popolazione")
 c2.metric("Popolazione", fmt_num(pop), _delta(pop, pop_prev), help=f"Anno {latest} · somma province")
 c3.metric("GVA totale", fmt_eur(gva * 1e6, compact=True), _delta(gva, gva_prev), help=f"Anno {latest} · somma province")
-c4.metric("Occupati", f"{fmt_num(emp)}k", _delta(emp, emp_prev), help=f"Anno {latest} · somma province")
 
+# Riga 2: Lavoro
+st.caption("Lavoro")
 c4, c5, c6 = st.columns(3)
+c4.metric("Occupati", f"{fmt_num(emp)}k", _delta(emp, emp_prev), help=f"Anno {latest} · somma province")
+c5.metric("Tasso occupazione", f"{tasso_occ:.1f}%", _delta(tasso_occ, tasso_occ_prev), help=f"Anno {latest} · media ponderata per popolazione")
+if prod:
+    c6.metric("Produttività lavoro", fmt_eur(prod), _delta(prod, prod_prev), help=f"Anno {latest} · media ponderata per popolazione")
+else:
+    c6.metric("Produttività lavoro", "—")
 
+# Riga 3: Contesto
+st.caption("Contesto")
+c7, c8, c9 = st.columns(3)
 if len(deb_curr) > 0:
     deb_y = int(deb_curr.iloc[0]["anno"])
     dp = deb_curr.iloc[0]["debito_pil_pct"]
     dp_d = f"{dp - deb_prev.iloc[0]['debito_pil_pct']:+.1f}pp" if len(deb_prev) > 0 else None
-    c4.metric("Debito/PIL", f"{dp:.1f}%", dp_d, help=f"Anno {deb_y} · dati Eurostat")
+    c7.metric("Debito/PIL", f"{dp:.1f}%", dp_d, help=f"Anno {deb_y} · dati Eurostat")
 else:
-    c4.metric("Debito/PIL", "—")
+    c7.metric("Debito/PIL", "—")
 
 if len(d_curr) > 0:
     dom_y = int(d_curr.iloc[0]["year"])
-    c5.metric("Export/PIL", f"{d_curr.iloc[0]['export_pct_pil']:.1f}%",
+    c8.metric("Export/PIL", f"{d_curr.iloc[0]['export_pct_pil']:.1f}%",
               help=f"Anno {dom_y} · dati Eurostat")
 else:
-    c5.metric("Export/PIL", "—")
+    c8.metric("Export/PIL", "—")
 
-# CAGR
+# CAGR ponderato
 min_year = int(hub[hub["pil_procapite_eur"].notna()]["year"].min())
-min_pil = query(f"SELECT AVG(pil_procapite_eur) AS v FROM mart_hub WHERE country='IT' AND year={min_year} AND pil_procapite_eur IS NOT NULL").iloc[0]["v"]
+min_pil = _weighted_avg(min_year, "pil_procapite_eur", "popolazione")
 years = latest - min_year
 if years > 0 and min_pil and pil_procap:
     cagr_val = (pil_procap / min_pil) ** (1 / years) - 1
-    c6.metric("CAGR PIL", f"{cagr_val*100:.2f}%")
+    c9.metric("CAGR PIL", f"{cagr_val*100:.2f}%")
 else:
-    c6.metric("CAGR PIL", "—")
+    c9.metric("CAGR PIL", "—")
 
 st.divider()
 

@@ -20,13 +20,14 @@ with col_y:
 with col_ind:
     indicator = st.selectbox("Indicatore", [
         "pil_procapite_eur", "gva_totale_mio", "popolazione",
-        "occupati_migliaia", "produttivita_lavoro_eur",
-        "reati_per_100k", "gfcf_totale_mio"
+        "occupati_migliaia", "tasso_occupazione_pct",
+        "produttivita_lavoro_eur", "reati_per_100k", "gfcf_totale_mio"
     ], format_func=lambda x: {
         "pil_procapite_eur": "PIL pro-capite (€)",
         "gva_totale_mio": "GVA totale (mln €)",
         "popolazione": "Popolazione",
         "occupati_migliaia": "Occupati (migliaia)",
+        "tasso_occupazione_pct": "Tasso occupazione (%)",
         "produttivita_lavoro_eur": "Produttività lavoro (€)",
         "reati_per_100k": "Reati / 100k ab.",
         "gfcf_totale_mio": "GFCF (mln €)",

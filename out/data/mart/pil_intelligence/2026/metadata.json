@@ -1,6 +1,6 @@
 {
   "metadata_schema_version": 1,
-  "timestamp_utc": "2026-09-13T13:39:58.712441+00:00",
+  "timestamp_utc": "2026-09-13T15:50:21.934454+00:00",
   "toolkit_version": "1.51.0",
   "layer": "mart",
   "dataset": "pil_intelligence",
@@ -10,13 +10,13 @@
   "outputs": [
     {
       "file": "mart_hub.parquet",
-      "sha256": "dc6fcee160ee94a283d01db49f03e35fb3dbde5520e4c60e5a568a175a08ab3a",
-      "bytes": 776047
+      "sha256": "cb35c34c26282c1c3df099c4b1aa8d053ac1b4de93654b28dad163cf8d020633",
+      "bytes": 815784
     },
     {
       "file": "mart_settori.parquet",
-      "sha256": "1850cd0533e323b222a73bc3aeb181d8ec0bf4a147b7a6f016cd3516517ac47e",
-      "bytes": 224546
+      "sha256": "8f016c40bcf9baf91df279bf2d77b09041f092a364dd4131af8c1ffe67265f65",
+      "bytes": 223491
     },
     {
       "file": "mart_debito_fisco.parquet",
@@ -25,8 +25,8 @@
     },
     {
       "file": "mart_trend_integrato.parquet",
-      "sha256": "16767a8505899f13a3203bffce36ddc758b1e5ec26693794aa2288eedc38c3ec",
-      "bytes": 63592
+      "sha256": "05b16e629aff9872696b13ef4a5b89d325112a014538bfe9271b63847b511243",
+      "bytes": 63589
     },
     {
       "file": "mart_domanda.parquet",
@@ -161,6 +161,10 @@
         },
         {
           "name": "gva_per_lavoratore_eur",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "tasso_occupazione_pct",
           "type": "DOUBLE"
         }
       ]

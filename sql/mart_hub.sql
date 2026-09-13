@@ -73,7 +73,10 @@ SELECT
          END AS gva_procapite_eur,
     CASE WHEN g.gva_totale_mio IS NOT NULL AND e.occupati_migliaia > 0
          THEN ROUND(g.gva_totale_mio * 1e3 / e.occupati_migliaia, 0)
-         END AS gva_per_lavoratore_eur
+         END AS gva_per_lavoratore_eur,
+    CASE WHEN e.occupati_migliaia IS NOT NULL AND gdp.pil_totale_mio > 0 AND p.pil_procapite_eur > 0
+         THEN ROUND(e.occupati_migliaia * 1000.0 / (gdp.pil_totale_mio * 1e6 / p.pil_procapite_eur) * 100, 1)
+         END AS tasso_occupazione_pct
 
 FROM pil p
 LEFT JOIN gdp_tot gdp ON p.year = gdp.year AND p.geo = gdp.geo
