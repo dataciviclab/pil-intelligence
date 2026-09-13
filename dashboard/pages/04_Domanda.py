@@ -4,7 +4,7 @@ import streamlit as st
 import plotly.express as px
 import plotly.graph_objects as go
 
-from sources import load_domanda
+from sources import load_domanda, load_domanda_all
 from lab_connectors.formatters import fmt_eur, fmt_num
 
 st.title("📦 Composizione della domanda")
@@ -59,6 +59,41 @@ with col2:
     ))
     fig.update_layout(height=350, margin=dict(t=10), showlegend=False)
     st.plotly_chart(fig, use_container_width=True)
+
+# --- Confronto internazionale ---
+COMPARE = {"IT": "Italia", "DE": "Germania", "FR": "Francia", "ES": "Spagna"}
+dom_all = load_domanda_all()
+comp = dom_all[(dom_all["country"].isin(COMPARE)) & (dom_all["year"] == year)].copy()
+comp["paese"] = comp["country"].map(COMPARE)
+
+if len(comp) > 1:
+    st.subheader(f"Confronto EU4 — {year}")
+
+    comp_sorted = comp.sort_values("export_pct_pil", ascending=True)
+    fig = px.bar(comp_sorted, x="export_pct_pil", y="paese", orientation="h",
+                 text="export_pct_pil", text_auto=".1f",
+                 labels={"export_pct_pil": "Export/PIL %", "paese": ""},
+                 color="paese", color_discrete_map={
+                     "Italia": "#3b82f6", "Germania": "#22c55e",
+                     "Francia": "#f59e0b", "Spagna": "#ef4444"
+                 })
+    fig.update_layout(height=250, margin=dict(t=10, b=10), showlegend=False)
+    st.plotly_chart(fig, use_container_width=True)
+
+    show = comp[["paese", "pil", "consumi_pct_pil", "gfcf_pct_pil", "export_pct_pil",
+                 "import_pct_pil", "saldo_commerciale_pct_pil"]].copy()
+    show = show.rename(columns={
+        "paese": "Paese", "pil": "PIL (mln€)",
+        "consumi_pct_pil": "Consumi/PIL", "gfcf_pct_pil": "GFCF/PIL",
+        "export_pct_pil": "Export/PIL", "import_pct_pil": "Import/PIL",
+        "saldo_commerciale_pct_pil": "Saldo comm."
+    })
+    show["PIL (mln€)"] = show["PIL (mln€)"].map(lambda v: fmt_eur(v * 1e6, compact=True))
+    for c in ["Consumi/PIL", "GFCF/PIL", "Export/PIL", "Import/PIL", "Saldo comm."]:
+        show[c] = show[c].map(lambda v: f"{v:.1f}%" if v == v else "—")
+    st.dataframe(show, use_container_width=True, hide_index=True)
+
+st.divider()
 
 # --- Trend storico ---
 st.subheader("Evoluzione nel tempo")

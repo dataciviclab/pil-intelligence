@@ -98,3 +98,8 @@ def load_trend() -> pd.DataFrame:
 @st.cache_data(ttl=3600, show_spinner=False)
 def load_domanda() -> pd.DataFrame:
     return query("SELECT * FROM mart_domanda WHERE country = 'IT' ORDER BY year")
+
+
+@st.cache_data(ttl=3600, show_spinner=False)
+def load_domanda_all() -> pd.DataFrame:
+    return query("SELECT * FROM mart_domanda ORDER BY year, country")
