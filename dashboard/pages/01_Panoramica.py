@@ -17,19 +17,25 @@ domanda = load_domanda()
 latest = latest_hub_year()
 prev = latest - 1
 
-# --- Aggregati nazionali da hub (somma province) ---
+# --- Aggregati nazionali da hub ---
 def _nat(year, col):
     r = query(f"SELECT SUM({col}) AS v FROM mart_hub WHERE country='IT' AND year={year} AND {col} IS NOT NULL")
     return float(r.iloc[0]["v"]) if len(r) > 0 and r.iloc[0]["v"] is not None else None
 
+def _weighted_avg(year, val_col, weight_col):
+    r = query(f"SELECT SUM({val_col} * {weight_col}) / SUM({weight_col}) AS v FROM mart_hub WHERE country='IT' AND year={year} AND {val_col} IS NOT NULL AND {weight_col} IS NOT NULL")
+    return float(r.iloc[0]["v"]) if len(r) > 0 and r.iloc[0]["v"] is not None else None
+
+pop = _nat(latest, "popolazione")
+pop_prev = _nat(prev, "popolazione")
 emp = _nat(latest, "occupati_migliaia")
 emp_prev = _nat(prev, "occupati_migliaia")
 gva = _nat(latest, "gva_totale_mio")
 gva_prev = _nat(prev, "gva_totale_mio")
 
-# PIL pro-capite medio (media ponderata non disponibile, usiamo la media)
-pil_procap = query(f"SELECT AVG(pil_procapite_eur) AS v FROM mart_hub WHERE country='IT' AND year={latest} AND pil_procapite_eur IS NOT NULL").iloc[0]["v"]
-pil_procap_prev = query(f"SELECT AVG(pil_procapite_eur) AS v FROM mart_hub WHERE country='IT' AND year={prev} AND pil_procapite_eur IS NOT NULL").iloc[0]["v"]
+# PIL pro-capite ponderato per popolazione
+pil_procap = _weighted_avg(latest, "pil_procapite_eur", "popolazione")
+pil_procap_prev = _weighted_avg(prev, "pil_procapite_eur", "popolazione")
 
 # Debito — ultimo anno disponibile (indipendente dal PIL)
 deb_latest = int(debito["anno"].max())
@@ -41,16 +47,17 @@ d_curr = domanda[domanda["year"] == latest]
 d_prev = domanda[domanda["year"] == prev]
 
 # --- KPI Cards ---
-c1, c2, c3 = st.columns(3)
+c1, c2, c3, c4 = st.columns(4)
 
 def _delta(curr_v, prev_v):
     if curr_v is None or prev_v is None or prev_v == 0:
         return None
     return f"{(curr_v/prev_v - 1)*100:+.1f}%"
 
-c1.metric("PIL pro-capite (media)", fmt_eur(pil_procap), _delta(pil_procap, pil_procap_prev), help=f"Anno {latest} · media province")
-c2.metric("GVA totale", fmt_eur(gva * 1e6, compact=True), _delta(gva, gva_prev), help=f"Anno {latest} · somma province")
-c3.metric("Occupati", f"{fmt_num(emp)}k", _delta(emp, emp_prev), help=f"Anno {latest} · somma province")
+c1.metric("PIL pro-capite", fmt_eur(pil_procap), _delta(pil_procap, pil_procap_prev), help=f"Anno {latest} · media ponderata per popolazione")
+c2.metric("Popolazione", fmt_num(pop), _delta(pop, pop_prev), help=f"Anno {latest} · somma province")
+c3.metric("GVA totale", fmt_eur(gva * 1e6, compact=True), _delta(gva, gva_prev), help=f"Anno {latest} · somma province")
+c4.metric("Occupati", f"{fmt_num(emp)}k", _delta(emp, emp_prev), help=f"Anno {latest} · somma province")
 
 c4, c5, c6 = st.columns(3)
 
@@ -87,8 +94,8 @@ col_left, col_right = st.columns([2, 1])
 with col_left:
     st.subheader(f"Evoluzione PIL pro-capite ({min_year}–{latest})")
     nat_trend = query(f"""
-        SELECT year, AVG(pil_procapite_eur) AS pil_medio
-        FROM mart_hub WHERE country='IT' AND pil_procapite_eur IS NOT NULL
+        SELECT year, SUM(pil_procapite_eur * popolazione) / SUM(popolazione) AS pil_medio
+        FROM mart_hub WHERE country='IT' AND pil_procapite_eur IS NOT NULL AND popolazione IS NOT NULL
         GROUP BY year ORDER BY year
     """)
     fig = px.line(nat_trend, x="year", y="pil_medio", markers=True,

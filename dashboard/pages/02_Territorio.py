@@ -19,11 +19,13 @@ with col_y:
     year = st.select_slider("Anno", options=years, value=years[-1])
 with col_ind:
     indicator = st.selectbox("Indicatore", [
-        "pil_procapite_eur", "gva_totale_mio", "occupati_migliaia",
-        "produttivita_lavoro_eur", "reati_per_100k", "gfcf_totale_mio"
+        "pil_procapite_eur", "gva_totale_mio", "popolazione",
+        "occupati_migliaia", "produttivita_lavoro_eur",
+        "reati_per_100k", "gfcf_totale_mio"
     ], format_func=lambda x: {
         "pil_procapite_eur": "PIL pro-capite (€)",
         "gva_totale_mio": "GVA totale (mln €)",
+        "popolazione": "Popolazione",
         "occupati_migliaia": "Occupati (migliaia)",
         "produttivita_lavoro_eur": "Produttività lavoro (€)",
         "reati_per_100k": "Reati / 100k ab.",
@@ -62,21 +64,21 @@ def _fmt_val(v, ind):
 
 with c1:
     st.markdown("**Top 10**")
-    top = df.head(10)[["geo_label_en", "macro_area", indicator]].copy()
+    top = df.head(10)[["geo_label_en", "macro_area", "popolazione", indicator]].copy()
     top["indicatore"] = top[indicator].map(lambda v: _fmt_val(v, indicator))
     st.dataframe(
-        top[["geo_label_en", "macro_area", "indicatore"]].rename(columns={
-            "geo_label_en": "Provincia", "macro_area": "Area"
+        top[["geo_label_en", "macro_area", "popolazione", "indicatore"]].rename(columns={
+            "geo_label_en": "Provincia", "macro_area": "Area", "popolazione": "Popolazione"
         }),
         use_container_width=True, hide_index=True
     )
 with c2:
     st.markdown("**Bottom 10**")
-    bot = df.tail(10)[["geo_label_en", "macro_area", indicator]].copy()
+    bot = df.tail(10)[["geo_label_en", "macro_area", "popolazione", indicator]].copy()
     bot["indicatore"] = bot[indicator].map(lambda v: _fmt_val(v, indicator))
     st.dataframe(
-        bot[["geo_label_en", "macro_area", "indicatore"]].rename(columns={
-            "geo_label_en": "Provincia", "macro_area": "Area"
+        bot[["geo_label_en", "macro_area", "popolazione", "indicatore"]].rename(columns={
+            "geo_label_en": "Provincia", "macro_area": "Area", "popolazione": "Popolazione"
         }),
         use_container_width=True, hide_index=True
     )

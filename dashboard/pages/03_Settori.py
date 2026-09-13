@@ -25,6 +25,11 @@ with col_p:
 df = settori[(settori["year"] == year) & (settori["geo_label_en"] == province)].copy()
 df = df[df["share_pct"].notna() & ~df["nace_r2"].str.contains("-", na=False)].sort_values("gva_valore_mio", ascending=False)
 
+# Ricalcola share_pct relativo ai soli detail (senza aggregate)
+detail_total = df["gva_valore_mio"].sum()
+if detail_total > 0:
+    df["share_pct"] = (df["gva_valore_mio"] / detail_total * 100).round(1)
+
 if len(df) == 0:
     st.warning("Nessun dato settoriale per questa provincia/anno")
     st.stop()

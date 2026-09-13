@@ -2,6 +2,7 @@
 --
 -- Una riga per (year, geo) a livello NUTS3.
 -- LEFT JOIN dal PIL come base, con indicatori cross-tematici.
+-- Popolazione derivata da GDP (MIO_EUR / EUR_HAB).
 -- GFCF è a livello NUTS2, joinato su nuts_parent_code.
 
 WITH pil AS (
@@ -9,6 +10,11 @@ WITH pil AS (
            value AS pil_procapite_eur
     FROM read_parquet('https://storage.googleapis.com/dataciviclab-clean/eurostat/eurostat_gdp_nuts3/eurostat_gdp_nuts3_2026_clean.parquet')
     WHERE unit = 'EUR_HAB' AND nuts_level = 'NUTS3'
+),
+gdp_tot AS (
+    SELECT year, geo, value AS pil_totale_mio
+    FROM read_parquet('https://storage.googleapis.com/dataciviclab-clean/eurostat/eurostat_gdp_nuts3/eurostat_gdp_nuts3_2026_clean.parquet')
+    WHERE unit = 'MIO_EUR' AND nuts_level = 'NUTS3'
 ),
 gva_tot AS (
     SELECT year, geo, value AS gva_totale_mio
@@ -51,6 +57,9 @@ SELECT
     p.nuts_parent_code,
     p.nuts_parent_label_en,
 
+    CASE WHEN gdp.pil_totale_mio > 0 AND p.pil_procapite_eur > 0
+         THEN ROUND(gdp.pil_totale_mio * 1e6 / p.pil_procapite_eur, 0)
+         END AS popolazione,
     p.pil_procapite_eur,
     g.gva_totale_mio,
     e.occupati_migliaia,
@@ -59,15 +68,19 @@ SELECT
     c.reati_per_100k,
     gf.gfcf_totale_mio,
 
+    CASE WHEN g.gva_totale_mio IS NOT NULL AND gdp.pil_totale_mio > 0 AND p.pil_procapite_eur > 0
+         THEN ROUND(g.gva_totale_mio * 1e6 / (gdp.pil_totale_mio * 1e6 / p.pil_procapite_eur), 0)
+         END AS gva_procapite_eur,
     CASE WHEN g.gva_totale_mio IS NOT NULL AND e.occupati_migliaia > 0
          THEN ROUND(g.gva_totale_mio * 1e3 / e.occupati_migliaia, 0)
          END AS gva_per_lavoratore_eur
 
 FROM pil p
-LEFT JOIN gva_tot g     ON p.year = g.year AND p.geo = g.geo
-LEFT JOIN emp_tot e     ON p.year = e.year AND p.geo = e.geo
-LEFT JOIN prod pr       ON p.year = pr.year AND p.geo = pr.geo
-LEFT JOIN turismo t     ON p.year = t.year AND p.geo = t.geo
+LEFT JOIN gdp_tot gdp ON p.year = gdp.year AND p.geo = gdp.geo
+LEFT JOIN gva_tot g   ON p.year = g.year AND p.geo = g.geo
+LEFT JOIN emp_tot e   ON p.year = e.year AND p.geo = e.geo
+LEFT JOIN prod pr     ON p.year = pr.year AND p.geo = pr.geo
+LEFT JOIN turismo t   ON p.year = t.year AND p.geo = t.geo
 LEFT JOIN criminalita c ON p.year = c.year AND p.geo = c.geo
-LEFT JOIN gfcf gf       ON p.year = gf.year AND p.nuts_parent_code = gf.geo_nuts2
+LEFT JOIN gfcf gf     ON p.year = gf.year AND p.nuts_parent_code = gf.geo_nuts2
 ORDER BY p.year, p.geo

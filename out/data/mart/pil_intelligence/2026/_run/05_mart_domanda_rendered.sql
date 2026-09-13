@@ -9,7 +9,6 @@ SELECT
     pil,
     consumi_finali,
     gfcf,
-    formazione_capitale,
     export,
     import,
     domanda_interna,
