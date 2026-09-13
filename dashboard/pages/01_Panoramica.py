@@ -5,7 +5,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 
 from sources import load_hub, load_debito, load_domanda, query, latest_hub_year
-from lab_connectors.formatters import fmt_eur, fmt_num, fmt_pct
+from lab_connectors.formatters import fmt_eur, fmt_num
 
 st.title("📊 Panoramica")
 

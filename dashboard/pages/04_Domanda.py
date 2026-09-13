@@ -5,7 +5,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 
 from sources import load_domanda
-from lab_connectors.formatters import fmt_eur, fmt_num, fmt_pct
+from lab_connectors.formatters import fmt_eur, fmt_num
 
 st.title("📦 Composizione della domanda")
 
@@ -24,9 +24,9 @@ row = row.iloc[0]
 st.subheader(f"Italia — {year}")
 c1, c2, c3, c4 = st.columns(4)
 c1.metric("PIL", fmt_eur(row["pil"] * 1e6, compact=True))
-c2.metric("Consumi/PIL", fmt_pct(row.get("consumi_pct_pil", 0)))
-c3.metric("GFCF/PIL", fmt_pct(row.get("gfcf_pct_pil", 0)))
-c4.metric("Export/PIL", fmt_pct(row.get("export_pct_pil", 0)))
+c2.metric("Consumi/PIL", f"{row.get('consumi_pct_pil', 0) or 0:.1f}%")
+c3.metric("GFCF/PIL", f"{row.get('gfcf_pct_pil', 0) or 0:.1f}%")
+c4.metric("Export/PIL", f"{row.get('export_pct_pil', 0) or 0:.1f}%")
 
 st.divider()
 
@@ -39,7 +39,8 @@ with col1:
     values = [row.get("consumi_finali", 0) or 0,
               row.get("gfcf", 0) or 0,
               row.get("export", 0) or 0]
-    fig = px.bar(x=labels, y=values, text_auto=":,.0f",
+    text = [fmt_eur(v * 1e6, compact=True) for v in values]
+    fig = px.bar(x=labels, y=values, text=text,
                  labels={"x": "", "y": "mln €"})
     fig.update_layout(height=350, margin=dict(t=10), showlegend=False)
     st.plotly_chart(fig, use_container_width=True)
