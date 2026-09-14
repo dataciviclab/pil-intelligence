@@ -26,7 +26,7 @@ fig = px.box(df, x="macro_area", y="pil_procapite_eur", color="macro_area",
              color_discrete_map={"Nord-Ovest": "#3b82f6", "Nord-Est": "#6366f1",
                                  "Centro": "#f59e0b", "Sud": "#ef4444", "Isole": "#f97316"})
 fig.update_layout(height=400, margin=dict(t=10), showlegend=False)
-st.plotly_chart(fig, use_container_width=True)
+st.plotly_chart(fig, width="stretch")
 
 # --- CAGR per macro-area ---
 _first_y = int(trend["pil_first_year"].min())
@@ -44,7 +44,7 @@ fig = px.bar(area_cagr, x="cagr_medio", y="macro_area", orientation="h",
              color_discrete_map={"Nord-Ovest": "#3b82f6", "Nord-Est": "#6366f1",
                                  "Centro": "#f59e0b", "Sud": "#ef4444", "Isole": "#f97316"})
 fig.update_layout(height=300, margin=dict(t=10), showlegend=False)
-st.plotly_chart(fig, use_container_width=True)
+st.plotly_chart(fig, width="stretch")
 
 # --- Scatter: PIL iniziale vs CAGR (convergenza) ---
 st.subheader("Convergenza: PIL iniziale vs velocità di crescita")
@@ -55,7 +55,7 @@ if "pil_first" in trend.columns and "pil_cagr_pct" in trend.columns:
                      labels={"pil_first": f"PIL pro-capite {_first_y} (€)",
                              "pil_cagr_pct": f"CAGR {_first_y}-{_last_y} (%)"})
     fig.update_layout(height=450, margin=dict(t=10))
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
 
     corr = t["pil_first"].corr(t["pil_cagr_pct"])
     st.caption(f"Correlazione PIL iniziale × CAGR: {corr:.3f} ({'convergenza' if corr < 0 else 'divergenza'})")
@@ -68,7 +68,7 @@ if len(gap_data) > 0:
     fig = px.line(avg, x="year", y="pil_procapite_eur", color="macro_area",
                   labels={"pil_procapite_eur": "PIL pro-capite medio (€)", "year": "Anno"})
     fig.update_layout(height=400, margin=dict(t=10))
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
 
 # --- Tabella CAGR province ---
 st.subheader("Classifica CAGR province")
@@ -77,4 +77,4 @@ show = show.rename(columns={"geo_label_en": "Provincia", "macro_area": "Area",
                              "pil_cagr_pct": "CAGR PIL %", "gva_delta_pct": "ΔGVA %",
                              "emp_delta_pct": "ΔOccupazione %"})
 show["ΔOccupazione %"] = pd.to_numeric(show["ΔOccupazione %"], errors="coerce")
-st.dataframe(show, use_container_width=True, hide_index=True, height=400)
+st.dataframe(show, width="stretch", hide_index=True, height=400)

@@ -54,7 +54,7 @@ fig.update_layout(
     xaxis_tickangle=-35, xaxis_tickfont=dict(size=10),
     legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
 )
-st.plotly_chart(fig, use_container_width=True)
+st.plotly_chart(fig, width="stretch")
 
 # --- Trend settori top ---
 st.subheader("Evoluzione settori")
@@ -79,7 +79,7 @@ if len(trend) > 0:
         )
     )
     fig.update_traces(line=dict(width=2.5))
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
 
 # --- Heatmap province × settori ---
 st.subheader("Confronto province (share %)")
@@ -129,4 +129,4 @@ if selected_provs:
                 title=""
             ),
         )
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width="stretch")

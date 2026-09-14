@@ -43,7 +43,7 @@ with col1:
     fig = px.bar(x=labels, y=values, text=text,
                  labels={"x": "", "y": "mln €"})
     fig.update_layout(height=350, margin=dict(t=10), showlegend=False)
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
 
 with col2:
     balance = (row.get("export", 0) or 0) - (row.get("import", 0) or 0)
@@ -58,7 +58,7 @@ with col2:
         textposition="outside",
     ))
     fig.update_layout(height=350, margin=dict(t=10), showlegend=False)
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
 
 # --- Confronto internazionale ---
 COMPARE = {"IT": "Italia", "DE": "Germania", "FR": "Francia", "ES": "Spagna"}
@@ -78,7 +78,7 @@ if len(comp) > 1:
                      "Francia": "#f59e0b", "Spagna": "#ef4444"
                  })
     fig.update_layout(height=250, margin=dict(t=10, b=10), showlegend=False)
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
 
     show = comp[["paese", "pil", "consumi_pct_pil", "gfcf_pct_pil", "export_pct_pil",
                  "import_pct_pil", "saldo_commerciale_pct_pil"]].copy()
@@ -91,7 +91,7 @@ if len(comp) > 1:
     show["PIL (mln€)"] = show["PIL (mln€)"].map(lambda v: fmt_eur(v * 1e6, compact=True))
     for c in ["Consumi/PIL", "GFCF/PIL", "Export/PIL", "Import/PIL", "Saldo comm."]:
         show[c] = show[c].map(lambda v: f"{v:.1f}%" if v == v else "—")
-    st.dataframe(show, use_container_width=True, hide_index=True)
+    st.dataframe(show, width="stretch", hide_index=True)
 
 st.divider()
 
@@ -104,13 +104,13 @@ with col_a:
     fig = px.line(d, x="year", y="consumi_pct_pil", labels={"consumi_pct_pil": "Consumi/PIL %", "year": ""})
     fig.add_scatter(x=d["year"], y=d["gfcf_pct_pil"], mode="lines", name="GFCF/PIL %")
     fig.update_layout(height=350, margin=dict(t=10))
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
 
 with col_b:
     fig = px.line(d, x="year", y="export_pct_pil", labels={"export_pct_pil": "Export/PIL %", "year": ""})
     fig.add_scatter(x=d["year"], y=d["import_pct_pil"], mode="lines", name="Import/PIL %")
     fig.update_layout(height=350, margin=dict(t=10))
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
 
 # --- Tabella ultimi 10 anni ---
 st.subheader("Tabella riepilogativa")
@@ -121,7 +121,7 @@ show = show.rename(columns={"year": "Anno", "pil": "PIL (mln€)", "consumi_fina
                              "gfcf": "GFCF", "export": "Export", "import": "Import"})
 for c in show.columns[1:]:
     show[c] = show[c].map(lambda v: fmt_eur(v * 1e6, compact=True) if v == v else "—")
-st.dataframe(show, use_container_width=True, hide_index=True)
+st.dataframe(show, width="stretch", hide_index=True)
 
 # --- Vista trimestrale ---
 st.divider()
@@ -148,7 +148,7 @@ if len(qt) > 0:
     show_cols = ["trimestre"] + [v for v in col_map.values() if v in pivot.columns]
     pivot = pivot[show_cols].sort_values("trimestre", ascending=False).head(8)
 
-    st.dataframe(pivot, use_container_width=True, hide_index=True)
+    st.dataframe(pivot, width="stretch", hide_index=True)
 
     # Mini chart PIL trimestrale
     fig = px.bar(pivot, x="trimestre", y="PIL", text="PIL",
@@ -158,6 +158,6 @@ if len(qt) > 0:
     fig.update_layout(height=280, margin=dict(t=10), showlegend=False,
                       coloraxis_showscale=False)
     fig.update_traces(texttemplate="%{text:+.1f}%", textposition="outside")
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
 else:
     st.info("Dati trimestrali non disponibili")

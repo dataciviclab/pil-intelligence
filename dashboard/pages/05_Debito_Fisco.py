@@ -48,7 +48,7 @@ for ev_year, ev_label in events:
                        text=ev_label, showarrow=False, textangle=-90,
                        font=dict(size=9, color="gray"))
 fig.update_layout(height=400, margin=dict(t=10))
-st.plotly_chart(fig, use_container_width=True)
+st.plotly_chart(fig, width="stretch")
 
 # --- Spread i-g ---
 st.subheader("Spread i-g vs crescita PIL")
@@ -58,7 +58,7 @@ if "spread_i_g" in deb.columns:
                   labels={"spread_i_g": "Spread i-g (pp)", "anno": "Anno"})
     fig.add_hline(y=0, line_color="red", line_dash="dash", opacity=0.5)
     fig.update_layout(height=300, margin=dict(t=10))
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
 
 # --- Composizione: saldo + interessi ---
 st.subheader("Saldo primario vs interessi")
@@ -71,7 +71,7 @@ if "saldo_primario_pct" in d2.columns and "interessi_pct_pil" in d2.columns:
                              mode="lines+markers", line=dict(color="indianred", width=2)))
     fig.update_layout(barmode="relative", height=350, margin=dict(t=10),
                       yaxis_title="% PIL", xaxis_title="Anno")
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
 
 # --- Tabella ultimi 20 anni ---
 st.subheader("Tabella")
@@ -80,4 +80,4 @@ show = deb[deb["anno"] >= latest - 20][["anno", "pil_nominale_mln", "debito_pil_
 show = show.rename(columns={"anno": "Anno", "pil_nominale_mln": "PIL (mln€)",
                              "debito_pil_pct": "Debito/PIL %", "saldo_primario_pct": "Saldo prim %",
                              "interessi_pct_pil": "Interessi %", "spread_i_g": "Spread i-g"})
-st.dataframe(show, use_container_width=True, hide_index=True)
+st.dataframe(show, width="stretch", hide_index=True)

@@ -119,7 +119,7 @@ with col_left:
     fig = px.line(nat_trend, x="year", y="pil_medio", markers=True,
                   labels={"pil_medio": "PIL pro-capite medio (€)", "year": "Anno"})
     fig.update_layout(height=350, margin=dict(t=10))
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
 
 with col_right:
     st.subheader("Composizione consumi/export/import")
@@ -132,7 +132,7 @@ with col_right:
                   row.get("import", 0) or 0]
         fig = px.pie(names=labels, values=values, hole=0.4)
         fig.update_layout(height=350, margin=dict(t=10), showlegend=True)
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width="stretch")
         st.caption("Percentuali sul totale dei 4 flussi. Export/PIL: {:.1f}%".format(
             row.get("export_pct_pil", 0) or 0))
     else:
@@ -146,4 +146,4 @@ d_deb = debito.copy()
 fig = px.line(d_deb, x="anno", y="debito_pil_pct", markers=True,
               labels={"debito_pil_pct": "Debito/PIL (%)", "anno": "Anno"})
 fig.update_layout(height=300, margin=dict(t=10))
-st.plotly_chart(fig, use_container_width=True)
+st.plotly_chart(fig, width="stretch")

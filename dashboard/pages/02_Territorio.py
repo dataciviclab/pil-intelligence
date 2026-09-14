@@ -50,7 +50,7 @@ fig = px.treemap(
     hover_data={indicator: ":,.0f", "geo": False, "macro_area": False}
 )
 fig.update_layout(height=500, margin=dict(t=10))
-st.plotly_chart(fig, use_container_width=True)
+st.plotly_chart(fig, width="stretch")
 
 # --- Top/Bottom table ---
 st.subheader("Classifica province")
@@ -65,23 +65,25 @@ def _fmt_val(v, ind):
 
 with c1:
     st.markdown("**Top 10**")
-    top = df.head(10)[["geo_label_en", "macro_area", "popolazione", indicator]].copy()
+    cols = list(dict.fromkeys(["geo_label_en", "macro_area", "popolazione", indicator]))
+    top = df.head(10)[cols].copy()
     top["indicatore"] = top[indicator].map(lambda v: _fmt_val(v, indicator))
     st.dataframe(
         top[["geo_label_en", "macro_area", "popolazione", "indicatore"]].rename(columns={
             "geo_label_en": "Provincia", "macro_area": "Area", "popolazione": "Popolazione"
         }),
-        use_container_width=True, hide_index=True
+        width="stretch", hide_index=True
     )
 with c2:
     st.markdown("**Bottom 10**")
-    bot = df.tail(10)[["geo_label_en", "macro_area", "popolazione", indicator]].copy()
+    cols = list(dict.fromkeys(["geo_label_en", "macro_area", "popolazione", indicator]))
+    bot = df.tail(10)[cols].copy()
     bot["indicatore"] = bot[indicator].map(lambda v: _fmt_val(v, indicator))
     st.dataframe(
         bot[["geo_label_en", "macro_area", "popolazione", "indicatore"]].rename(columns={
             "geo_label_en": "Provincia", "macro_area": "Area", "popolazione": "Popolazione"
         }),
-        use_container_width=True, hide_index=True
+        width="stretch", hide_index=True
     )
 
 # --- Trend selezionabile ---
@@ -93,4 +95,4 @@ if selected:
     fig = px.line(trend, x="year", y=indicator, color="geo_label_en",
                   labels={indicator: indicator, "year": "Anno", "geo_label_en": "Provincia"})
     fig.update_layout(height=400, margin=dict(t=10))
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
