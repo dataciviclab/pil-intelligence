@@ -10,6 +10,11 @@ requires-python = ">=3.10"
 license = "MIT"
 
 [project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "pytest-cov>=5.0",
+    "ruff>=0.5",
+]
 dashboard = [
     "streamlit>=1.61",
     "plotly>=5.18",
@@ -18,10 +23,15 @@ dashboard = [
     "duckdb>=1.5.3",
     "lab-connectors[duckdb] @ git+https://github.com/dataciviclab/lab-connectors.git",
 ]
-
 pipeline = [
     "dataciviclab-toolkit @ git+https://github.com/dataciviclab/toolkit.git",
 ]
 
+[project.urls]
+Home = "https://github.com/dataciviclab/pil-intelligence"
+
 [tool.setuptools]
 packages = []
+
+[tool.toolkit.extends]
+source_id = "pil_intelligence"
