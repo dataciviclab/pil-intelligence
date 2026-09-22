@@ -1,6 +1,6 @@
 {
   "metadata_schema_version": 1,
-  "timestamp_utc": "2026-09-22T18:31:28.680080+00:00",
+  "timestamp_utc": "2026-09-22T19:10:28.368857+00:00",
   "toolkit_version": "1.52.0",
   "layer": "mart",
   "dataset": "pil_intelligence",
@@ -15,8 +15,8 @@
     },
     {
       "file": "mart_settori.parquet",
-      "sha256": "4969ba33b48abeded59cd031cd82bbac155783821ac70fd61a599bc050a8800d",
-      "bytes": 133256
+      "sha256": "3b7b474cd84a498f4172a6f1fd10c0683d69723f4ff07f6c3b7c75c6d2093c39",
+      "bytes": 128706
     },
     {
       "file": "mart_debito_fisco.parquet",
@@ -25,8 +25,8 @@
     },
     {
       "file": "mart_trend_integrato.parquet",
-      "sha256": "0846e288c6eaa502da04e49a7e511ee10868b81218f23d0930d2140f335a0ef1",
-      "bytes": 72339
+      "sha256": "4fc8c44f33e6d86d2a15709b99cc0abe3f06f3e6526d0c78bf18ae0478e55b00",
+      "bytes": 72335
     },
     {
       "file": "mart_domanda.parquet",
@@ -40,8 +40,8 @@
     },
     {
       "file": "mart_settori_trend.parquet",
-      "sha256": "7678537df041d07ac40c976cc21bf78349b8e93772af40954a365c31d3bb4e3c",
-      "bytes": 306105
+      "sha256": "cc3c73dbd3ac8f33c2358f7e3dbe92d7a95ebfba36799b2975ef5ff19a2f8702",
+      "bytes": 297013
     }
   ],
   "output_paths": [
