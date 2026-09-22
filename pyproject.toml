@@ -19,5 +19,9 @@ dashboard = [
     "lab-connectors[duckdb] @ git+https://github.com/dataciviclab/lab-connectors.git",
 ]
 
+pipeline = [
+    "dataciviclab-toolkit @ git+https://github.com/dataciviclab/toolkit.git",
+]
+
 [tool.setuptools]
 packages = []
