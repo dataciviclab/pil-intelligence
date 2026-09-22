@@ -26,6 +26,8 @@ mart:
       sql: "sql/mart_domanda.sql"
     - name: "mart_trimestrale"
       sql: "sql/mart_trimestrale.sql"
+    - name: "mart_settori_trend"
+      sql: "sql/mart_settori_trend.sql"
   required_tables:
     - "mart_hub"
     - "mart_settori"
@@ -38,6 +40,7 @@ mart:
       mart_settori: { min_rows: 5000 }
       mart_debito_fisco: { min_rows: 20 }
       mart_trend_integrato: { min_rows: 100 }
+      mart_settori_trend: { min_rows: 5000 }
 
 validation:
   fail_on_error: true

@@ -2,9 +2,11 @@
 
 import streamlit as st
 import plotly.express as px
-import plotly.graph_objects as go
 
-from sources import load_hub, load_debito, load_domanda, query, latest_hub_year
+from sources import (
+    load_hub, load_debito, load_domanda, query,
+    latest_hub_year, _nat, _wavg, delta_pct, delta_pp,
+)
 from lab_connectors.formatters import fmt_eur, fmt_num
 
 st.title("📊 Panoramica")
@@ -13,105 +15,90 @@ hub = load_hub()
 debito = load_debito()
 domanda = load_domanda()
 
-# Ultimo anno con dati PIL
 latest = latest_hub_year()
 prev = latest - 1
 
-# --- Aggregati nazionali da hub ---
-def _nat(year, col):
-    r = query(f"SELECT SUM({col}) AS v FROM mart_hub WHERE country='IT' AND year={year} AND {col} IS NOT NULL")
-    return float(r.iloc[0]["v"]) if len(r) > 0 and r.iloc[0]["v"] is not None else None
-
-def _weighted_avg(year, val_col, weight_col):
-    r = query(f"SELECT SUM({val_col} * {weight_col}) / SUM({weight_col}) AS v FROM mart_hub WHERE country='IT' AND year={year} AND {val_col} IS NOT NULL AND {weight_col} IS NOT NULL")
-    return float(r.iloc[0]["v"]) if len(r) > 0 and r.iloc[0]["v"] is not None else None
-
+# --- Dati ---
 pop = _nat(latest, "popolazione")
 pop_prev = _nat(prev, "popolazione")
 emp = _nat(latest, "occupati_migliaia")
 emp_prev = _nat(prev, "occupati_migliaia")
 gva = _nat(latest, "gva_totale_mio")
 gva_prev = _nat(prev, "gva_totale_mio")
+pil_procap = _wavg(latest, "pil_procapite_eur", "popolazione")
+pil_procap_prev = _wavg(prev, "pil_procapite_eur", "popolazione")
+prod = _wavg(latest, "produttivita_lavoro_eur", "popolazione")
+prod_prev = _wavg(prev, "produttivita_lavoro_eur", "popolazione")
+tasso_occ = _wavg(latest, "tasso_occupazione_pct", "popolazione")
+tasso_occ_prev = _wavg(prev, "tasso_occupazione_pct", "popolazione")
+gfcf_va = _wavg(latest, "gfcf_su_va_pct", "gva_totale_mio")
+gfcf_va_prev = _wavg(prev, "gfcf_su_va_pct", "gva_totale_mio")
 
-# Tasso occupazione e produttività ponderati
-tasso_occ = _weighted_avg(latest, "tasso_occupazione_pct", "popolazione")
-tasso_occ_prev = _weighted_avg(prev, "tasso_occupazione_pct", "popolazione")
-prod = _weighted_avg(latest, "produttivita_lavoro_eur", "popolazione")
-prod_prev = _weighted_avg(prev, "produttivita_lavoro_eur", "popolazione")
-
-# PIL pro-capite ponderato per popolazione
-pil_procap = _weighted_avg(latest, "pil_procapite_eur", "popolazione")
-pil_procap_prev = _weighted_avg(prev, "pil_procapite_eur", "popolazione")
-
-# Debito — ultimo anno disponibile (indipendente dal PIL)
 deb_latest = int(debito["anno"].max())
 deb_curr = debito[debito["anno"] == deb_latest]
 deb_prev = debito[debito["anno"] == deb_latest - 1]
-
-# Domanda
 d_curr = domanda[domanda["year"] == latest]
-d_prev = domanda[domanda["year"] == prev]
 
-# --- KPI Cards: 3 righe x 3, raggruppati per tema ---
+min_year = int(hub[hub["pil_procapite_eur"].notna()]["year"].min())
+min_pil = _wavg(min_year, "pil_procapite_eur", "popolazione")
+years = latest - min_year
+cagr = ((pil_procap / min_pil) ** (1 / years) - 1) if years > 0 and min_pil and pil_procap else None
 
-def _delta(curr_v, prev_v):
-    if curr_v is None or prev_v is None or prev_v == 0:
-        return None
-    return f"{(curr_v/prev_v - 1)*100:+.1f}%"
+pil_yoy = None
+if pil_procap and pil_procap_prev:
+    pil_yoy = (pil_procap / pil_procap_prev - 1) * 100
 
-# Riga 1: Economia
+
+# === KPI ===
+
 st.caption("Economia")
 c1, c2, c3 = st.columns(3)
-c1.metric("PIL pro-capite", fmt_eur(pil_procap), _delta(pil_procap, pil_procap_prev), help=f"Anno {latest} · media ponderata per popolazione")
-c2.metric("Popolazione", fmt_num(pop), _delta(pop, pop_prev), help=f"Anno {latest} · somma province")
-c3.metric("GVA totale", fmt_eur(gva * 1e6, compact=True), _delta(gva, gva_prev), help=f"Anno {latest} · somma province")
+c1.metric("PIL pro-capite", fmt_eur(pil_procap), delta_pct(pil_procap, pil_procap_prev),
+          help=f"Anno {latest} · media ponderata per popolazione")
+c2.metric("Produttività lavoro", fmt_eur(prod) if prod else "—",
+          delta_pct(prod, prod_prev) if prod else None,
+          help=f"Anno {latest} · VA / occupato, media ponderata")
+c3.metric("Tasso di investimento", f"{gfcf_va:.1f}%" if gfcf_va else "—",
+          delta_pct(gfcf_va, gfcf_va_prev) if gfcf_va else None,
+          help=f"Anno {latest} · GFCF / VA, media ponderata")
 
-# Riga 2: Lavoro
-st.caption("Lavoro")
+st.caption("Lavoro e dinamica")
 c4, c5, c6 = st.columns(3)
-c4.metric("Occupati", f"{fmt_num(emp)}k", _delta(emp, emp_prev), help=f"Anno {latest} · somma province")
-c5.metric("Tasso occupazione", f"{tasso_occ:.1f}%", _delta(tasso_occ, tasso_occ_prev), help=f"Anno {latest} · media ponderata per popolazione")
-if prod:
-    c6.metric("Produttività lavoro", fmt_eur(prod), _delta(prod, prod_prev), help=f"Anno {latest} · media ponderata per popolazione")
-else:
-    c6.metric("Produttività lavoro", "—")
-
-# Riga 3: Contesto
-st.caption("Contesto")
-c7, c8, c9 = st.columns(3)
-if len(deb_curr) > 0:
-    deb_y = int(deb_curr.iloc[0]["anno"])
-    dp = deb_curr.iloc[0]["debito_pil_pct"]
-    dp_d = f"{dp - deb_prev.iloc[0]['debito_pil_pct']:+.1f}pp" if len(deb_prev) > 0 else None
-    c7.metric("Debito/PIL", f"{dp:.1f}%", dp_d, help=f"Anno {deb_y} · dati Eurostat")
-else:
-    c7.metric("Debito/PIL", "—")
-
-if len(d_curr) > 0:
-    dom_y = int(d_curr.iloc[0]["year"])
-    c8.metric("Export/PIL", f"{d_curr.iloc[0]['export_pct_pil']:.1f}%",
-              help=f"Anno {dom_y} · dati Eurostat")
-else:
-    c8.metric("Export/PIL", "—")
-
-# CAGR ponderato
-min_year = int(hub[hub["pil_procapite_eur"].notna()]["year"].min())
-min_pil = _weighted_avg(min_year, "pil_procapite_eur", "popolazione")
-years = latest - min_year
-if years > 0 and min_pil and pil_procap:
-    cagr_val = (pil_procap / min_pil) ** (1 / years) - 1
-    c9.metric("CAGR PIL", f"{cagr_val*100:.2f}%")
-else:
-    c9.metric("CAGR PIL", "—")
+c4.metric("Occupati", f"{emp / 1000:.1f}M" if emp else "—",
+          delta_pct(emp, emp_prev), help=f"Anno {latest} · totale occupati (milioni)")
+c5.metric("Tasso di occupazione", f"{tasso_occ:.1f}%",
+          delta_pct(tasso_occ, tasso_occ_prev),
+          help=f"Anno {latest} · occupati / popolazione, media ponderata")
+c6.metric("CAGR PIL pro-capite", f"{cagr * 100:.2f}%" if cagr else "—",
+          f"{pil_yoy:+.1f}%" if pil_yoy else None,
+          help=f"Crescita annua {min_year}–{latest}")
 
 st.divider()
 
-# --- Sparkline PIL (media nazionale per anno) ---
+ctx1, ctx2, ctx3, ctx4 = st.columns(4)
+ctx1.metric("GVA totale", fmt_eur(gva * 1e6, compact=True), delta_pct(gva, gva_prev))
+if len(deb_curr) > 0:
+    dp = deb_curr.iloc[0]["debito_pil_pct"]
+    dp_p = deb_prev.iloc[0]["debito_pil_pct"] if len(deb_prev) > 0 else None
+    ctx2.metric("Debito/PIL", f"{dp:.1f}%", delta_pp(dp, dp_p))
+else:
+    ctx2.metric("Debito/PIL", "—")
+if len(d_curr) > 0:
+    ctx3.metric("Export/PIL", f"{d_curr.iloc[0]['export_pct_pil']:.1f}%")
+else:
+    ctx3.metric("Export/PIL", "—")
+ctx4.metric("Popolazione", fmt_num(pop), delta_pct(pop, pop_prev, threshold=0.05))
+
+
+# === GRAFICI ===
+
+st.divider()
+
 col_left, col_right = st.columns([2, 1])
 
 with col_left:
     st.subheader(f"Evoluzione PIL pro-capite ({min_year}–{latest})")
-    nat_trend = query(f"""
+    nat_trend = query("""
         SELECT year, SUM(pil_procapite_eur * popolazione) / SUM(popolazione) AS pil_medio
         FROM mart_hub WHERE country='IT' AND pil_procapite_eur IS NOT NULL AND popolazione IS NOT NULL
         GROUP BY year ORDER BY year
@@ -122,10 +109,10 @@ with col_left:
     st.plotly_chart(fig, width="stretch")
 
 with col_right:
-    st.subheader("Composizione consumi/export/import")
+    st.subheader("Composizione domanda")
     if len(d_curr) > 0:
         row = d_curr.iloc[0]
-        labels = ["Consumi", "GFCF", "Export", "Import"]
+        labels = ["Consumi famiglie", "Investimenti (GFCF)", "Export", "Import"]
         values = [row.get("consumi_finali", 0) or 0,
                   row.get("gfcf", 0) or 0,
                   row.get("export", 0) or 0,
@@ -133,14 +120,12 @@ with col_right:
         fig = px.pie(names=labels, values=values, hole=0.4)
         fig.update_layout(height=350, margin=dict(t=10), showlegend=True)
         st.plotly_chart(fig, width="stretch")
-        st.caption("Percentuali sul totale dei 4 flussi. Export/PIL: {:.1f}%".format(
-            row.get("export_pct_pil", 0) or 0))
+        st.caption(f"Export/PIL: {row.get('export_pct_pil', 0) or 0:.1f}% · Anno {latest}")
     else:
         st.info("Dati domanda non disponibili")
 
 st.divider()
 
-# --- Debito/PIL storico ---
 st.subheader("Debito/PIL — serie storica")
 d_deb = debito.copy()
 fig = px.line(d_deb, x="anno", y="debito_pil_pct", markers=True,

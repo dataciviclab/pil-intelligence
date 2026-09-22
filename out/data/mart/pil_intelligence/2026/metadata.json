@@ -1,42 +1,47 @@
 {
   "metadata_schema_version": 1,
-  "timestamp_utc": "2026-09-13T16:08:12.761011+00:00",
-  "toolkit_version": "1.51.0",
+  "timestamp_utc": "2026-09-22T18:31:28.680080+00:00",
+  "toolkit_version": "1.52.0",
   "layer": "mart",
   "dataset": "pil_intelligence",
   "year": 2026,
-  "config_hash": "55f88c1729a7d216b946a580b6bb69d0364e91f87bcb30e631020e96c507efee",
+  "config_hash": "2650b92430d8c2b08cce8addb54f042ef29a3fab0e1b7abb925578f11d01cfd9",
   "inputs": [],
   "outputs": [
     {
       "file": "mart_hub.parquet",
-      "sha256": "5d8e1aac974fd7535ab8582faf9d3f8fa35f25f6ca9377a016e1659388119c4c",
-      "bytes": 815654
+      "sha256": "61153f20eb0c86c082b2cbe6e2c10c6998c30d88180918380aabd8c2cd411300",
+      "bytes": 836016
     },
     {
       "file": "mart_settori.parquet",
-      "sha256": "1850cd0533e323b222a73bc3aeb181d8ec0bf4a147b7a6f016cd3516517ac47e",
-      "bytes": 224546
+      "sha256": "4969ba33b48abeded59cd031cd82bbac155783821ac70fd61a599bc050a8800d",
+      "bytes": 133256
     },
     {
       "file": "mart_debito_fisco.parquet",
-      "sha256": "cd2e4846b4abc94e40d2640891fe91a69a28bfe7077cf40b04021256f7ba1f5b",
+      "sha256": "c3fb3115189e934169e0f20286e0f021b5322ed59297228cdaba7e0dcee6a976",
       "bytes": 10515
     },
     {
       "file": "mart_trend_integrato.parquet",
-      "sha256": "63bfd52c6063b60ba5c2c12912524aa7fd990896e0293d38463451389dc0e291",
-      "bytes": 63583
+      "sha256": "0846e288c6eaa502da04e49a7e511ee10868b81218f23d0930d2140f335a0ef1",
+      "bytes": 72339
     },
     {
       "file": "mart_domanda.parquet",
-      "sha256": "1c7c42be5f693641c3f3107e1c40b43f7eeda61c657e1a45555a452d8453cfe4",
+      "sha256": "40f581e620f1036a02975a2af2f505fa0c52defe3c28901d623cbfce28bae437",
       "bytes": 50210
     },
     {
       "file": "mart_trimestrale.parquet",
-      "sha256": "96e8f47f673db3e27394833a7fc8b15b239181cae69e9607a2fdaab52935522f",
+      "sha256": "b0a7a4c01e691dbe1b95bfdff96208d4da515ecaf5f05e46d23695938590cb08",
       "bytes": 2467
+    },
+    {
+      "file": "mart_settori_trend.parquet",
+      "sha256": "7678537df041d07ac40c976cc21bf78349b8e93772af40954a365c31d3bb4e3c",
+      "bytes": 306105
     }
   ],
   "output_paths": [
@@ -45,7 +50,8 @@
     "data/mart/pil_intelligence/2026/mart_debito_fisco.parquet",
     "data/mart/pil_intelligence/2026/mart_trend_integrato.parquet",
     "data/mart/pil_intelligence/2026/mart_domanda.parquet",
-    "data/mart/pil_intelligence/2026/mart_trimestrale.parquet"
+    "data/mart/pil_intelligence/2026/mart_trimestrale.parquet",
+    "data/mart/pil_intelligence/2026/mart_settori_trend.parquet"
   ],
   "template_ctx": {
     "year": 2026,
@@ -87,6 +93,12 @@
       "sql": "sql/mart_trimestrale.sql",
       "sql_rendered": "data/mart/pil_intelligence/2026/_run/06_mart_trimestrale_rendered.sql",
       "output": "data/mart/pil_intelligence/2026/mart_trimestrale.parquet"
+    },
+    {
+      "name": "mart_settori_trend",
+      "sql": "sql/mart_settori_trend.sql",
+      "sql_rendered": "data/mart/pil_intelligence/2026/_run/07_mart_settori_trend_rendered.sql",
+      "output": "data/mart/pil_intelligence/2026/mart_settori_trend.parquet"
     }
   ],
   "hierarchy_enabled": false,
@@ -166,11 +178,15 @@
         {
           "name": "tasso_occupazione_pct",
           "type": "DOUBLE"
+        },
+        {
+          "name": "gfcf_su_va_pct",
+          "type": "DOUBLE"
         }
       ]
     },
     "mart_settori": {
-      "row_count": 37800,
+      "row_count": 18900,
       "columns": [
         {
           "name": "year",
@@ -315,6 +331,10 @@
           "type": "DOUBLE"
         },
         {
+          "name": "gva_cagr_pct",
+          "type": "DOUBLE"
+        },
+        {
           "name": "emp_first",
           "type": "DOUBLE"
         },
@@ -324,6 +344,10 @@
         },
         {
           "name": "emp_delta_pct",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "emp_cagr_pct",
           "type": "DOUBLE"
         }
       ]
@@ -410,6 +434,63 @@
         },
         {
           "name": "value",
+          "type": "DOUBLE"
+        }
+      ]
+    },
+    "mart_settori_trend": {
+      "row_count": 18900,
+      "columns": [
+        {
+          "name": "year",
+          "type": "INTEGER"
+        },
+        {
+          "name": "geo",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "geo_label_en",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "country",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "nace_r2",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "nace_r2_label_en",
+          "type": "VARCHAR"
+        },
+        {
+          "name": "gva_valore_mio",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "gva_totale_mio",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "share_pct",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "share_pct_prev",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "share_delta_pp",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "gva_prev",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "gva_yoy_pct",
           "type": "DOUBLE"
         }
       ]

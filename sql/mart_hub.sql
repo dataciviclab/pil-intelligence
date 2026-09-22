@@ -17,7 +17,7 @@ gdp_tot AS (
     WHERE unit = 'MIO_EUR' AND nuts_level = 'NUTS3'
 ),
 gva_tot AS (
-    SELECT year, geo, value AS gva_totale_mio
+    SELECT year, geo, nuts_parent_code, value AS gva_totale_mio
     FROM read_parquet('https://storage.googleapis.com/dataciviclab-clean/eurostat/eurostat_gva_nuts3/eurostat_gva_nuts3_2026_clean.parquet')
     WHERE unit = 'CP_MEUR' AND nace_r2 = 'TOTAL' AND nuts_level = 'NUTS3'
 ),
@@ -47,6 +47,11 @@ gfcf AS (
     FROM read_parquet('https://storage.googleapis.com/dataciviclab-clean/eurostat/eurostat_gfcf_nuts2/eurostat_gfcf_nuts2_2026_clean.parquet')
     WHERE sector = 'S1' AND currency = 'MIO_EUR' AND nace_r2 = 'TOTAL'
       AND nuts_level = 'NUTS2'
+),
+gva_per_nuts2 AS (
+    SELECT year, nuts_parent_code AS geo_nuts2, SUM(gva_totale_mio) AS gva_nuts2_mio
+    FROM gva_tot
+    GROUP BY year, nuts_parent_code
 )
 SELECT
     p.year,
@@ -76,7 +81,10 @@ SELECT
          END AS gva_per_lavoratore_eur,
     CASE WHEN e.occupati_migliaia IS NOT NULL AND gdp.pil_totale_mio > 0 AND p.pil_procapite_eur > 0
          THEN ROUND(e.occupati_migliaia * 1000.0 / (gdp.pil_totale_mio * 1e6 / p.pil_procapite_eur) * 100, 1)
-         END AS tasso_occupazione_pct
+         END AS tasso_occupazione_pct,
+    CASE WHEN gf.gfcf_totale_mio > 0 AND gn.gva_nuts2_mio > 0
+         THEN ROUND(gf.gfcf_totale_mio / gn.gva_nuts2_mio * 100, 1)
+         END AS gfcf_su_va_pct
 
 FROM pil p
 LEFT JOIN gdp_tot gdp ON p.year = gdp.year AND p.geo = gdp.geo
@@ -86,4 +94,5 @@ LEFT JOIN prod pr     ON p.year = pr.year AND p.geo = pr.geo
 LEFT JOIN turismo t   ON p.year = t.year AND p.geo = t.geo
 LEFT JOIN criminalita c ON p.year = c.year AND p.geo = c.geo
 LEFT JOIN gfcf gf     ON p.year = gf.year AND p.nuts_parent_code = gf.geo_nuts2
+LEFT JOIN gva_per_nuts2 gn ON p.year = gn.year AND p.nuts_parent_code = gn.geo_nuts2
 ORDER BY p.year, p.geo

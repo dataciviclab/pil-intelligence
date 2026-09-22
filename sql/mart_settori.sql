@@ -8,7 +8,8 @@ WITH gva AS (
     SELECT year, geo, geo_label_en, nuts_level, country,
            nace_r2, nace_r2_label_en, value AS gva_valore_mio
     FROM read_parquet('https://storage.googleapis.com/dataciviclab-clean/eurostat/eurostat_gva_nuts3/eurostat_gva_nuts3_2026_clean.parquet')
-    WHERE unit = 'CP_MEUR' AND nace_r2 != 'TOTAL' AND nuts_level = 'NUTS3'
+    WHERE unit = 'CP_MEUR' AND nuts_level = 'NUTS3'
+      AND nace_r2 IN ('A', 'B-E', 'F', 'G-J', 'K-N', 'O-U', 'R-U')
 ),
 gva_totale AS (
     SELECT year, geo, value AS gva_totale_mio
