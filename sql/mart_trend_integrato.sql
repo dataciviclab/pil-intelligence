@@ -30,7 +30,10 @@ gva AS (
     WHERE unit = 'CP_MEUR' AND nace_r2 = 'TOTAL' AND nuts_level = 'NUTS3'
 ),
 gva_bounds AS (
-    SELECT geo, MIN(year) FILTER (WHERE gva IS NOT NULL) AS first_year, MAX(year) FILTER (WHERE gva IS NOT NULL) AS last_year
+    SELECT geo,
+           MIN(year) FILTER (WHERE gva IS NOT NULL) AS first_year,
+           MAX(year) FILTER (WHERE gva IS NOT NULL) AS last_year,
+           COUNT(*) FILTER (WHERE gva IS NOT NULL) AS years_observed
     FROM gva GROUP BY geo
 ),
 gva_first AS (
@@ -48,7 +51,10 @@ emp AS (
     WHERE unit = 'THS' AND wstatus = 'EMP' AND nace_r2 = 'TOTAL' AND nuts_level = 'NUTS3'
 ),
 emp_bounds AS (
-    SELECT geo, MIN(year) FILTER (WHERE emp IS NOT NULL) AS first_year, MAX(year) FILTER (WHERE emp IS NOT NULL) AS last_year
+    SELECT geo,
+           MIN(year) FILTER (WHERE emp IS NOT NULL) AS first_year,
+           MAX(year) FILTER (WHERE emp IS NOT NULL) AS last_year,
+           COUNT(*) FILTER (WHERE emp IS NOT NULL) AS years_observed
     FROM emp GROUP BY geo
 ),
 emp_first AS (
@@ -81,17 +87,27 @@ SELECT
     gf.first_value AS gva_first,
     gl.last_value AS gva_last,
     ROUND((gl.last_value / NULLIF(gf.first_value, 0) - 1) * 100, 2) AS gva_delta_pct,
+    ROUND(
+        (POWER(gl.last_value / NULLIF(gf.first_value, 0), 1.0 / NULLIF(gvb.years_observed - 1, 0)) - 1) * 100,
+        3
+    ) AS gva_cagr_pct,
 
     ef.first_value AS emp_first,
     el.last_value AS emp_last,
-    ROUND((el.last_value / NULLIF(ef.first_value, 0) - 1) * 100, 2) AS emp_delta_pct
+    ROUND((el.last_value / NULLIF(ef.first_value, 0) - 1) * 100, 2) AS emp_delta_pct,
+    ROUND(
+        (POWER(el.last_value / NULLIF(ef.first_value, 0), 1.0 / NULLIF(eb.years_observed - 1, 0)) - 1) * 100,
+        3
+    ) AS emp_cagr_pct
 
 FROM pil_bounds b
 JOIN (SELECT DISTINCT geo, geo_label_en, nuts_level, country FROM read_parquet('https://storage.googleapis.com/dataciviclab-clean/eurostat/eurostat_gdp_nuts3/eurostat_gdp_nuts3_2026_clean.parquet') WHERE nuts_level = 'NUTS3') g ON b.geo = g.geo
 LEFT JOIN pil_first pf ON b.geo = pf.geo
 LEFT JOIN pil_last pl  ON b.geo = pl.geo
+LEFT JOIN gva_bounds gvb ON b.geo = gvb.geo
 LEFT JOIN gva_first gf ON b.geo = gf.geo
 LEFT JOIN gva_last gl  ON b.geo = gl.geo
+LEFT JOIN emp_bounds eb ON b.geo = eb.geo
 LEFT JOIN emp_first ef ON b.geo = ef.geo
 LEFT JOIN emp_last el  ON b.geo = el.geo
 ORDER BY pil_cagr_pct DESC NULLS LAST
