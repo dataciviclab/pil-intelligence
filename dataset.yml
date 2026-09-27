@@ -13,34 +13,57 @@ dataset:
 # CI runna toolkit run mart → committa i parquet nel repo. Dashboard legge dal repo.
 
 support:
+  # Eurostat clean (standard pattern with repo prefix)
   - name: eurostat_gdp_nuts3
     type: external
-    uri: "https://storage.googleapis.com/dataciviclab-clean/eurostat/eurostat_gdp_nuts3/eurostat_gdp_nuts3_{year}_clean.parquet"
+    bucket: clean
+    pattern: clean_parquet
+    slug: eurostat_gdp_nuts3
+    prefix: "eurostat/"
     years: [2026]
   - name: eurostat_gva_nuts3
     type: external
-    uri: "https://storage.googleapis.com/dataciviclab-clean/eurostat/eurostat_gva_nuts3/eurostat_gva_nuts3_{year}_clean.parquet"
+    bucket: clean
+    pattern: clean_parquet
+    slug: eurostat_gva_nuts3
+    prefix: "eurostat/"
     years: [2026]
   - name: eurostat_emp_nuts3
     type: external
-    uri: "https://storage.googleapis.com/dataciviclab-clean/eurostat/eurostat_emp_nuts3/eurostat_emp_nuts3_{year}_clean.parquet"
+    bucket: clean
+    pattern: clean_parquet
+    slug: eurostat_emp_nuts3
+    prefix: "eurostat/"
     years: [2026]
   - name: eurostat_labour_productivity_nuts3
     type: external
-    uri: "https://storage.googleapis.com/dataciviclab-clean/eurostat/eurostat_labour_productivity_nuts3/eurostat_labour_productivity_nuts3_{year}_clean.parquet"
+    bucket: clean
+    pattern: clean_parquet
+    slug: eurostat_labour_productivity_nuts3
+    prefix: "eurostat/"
     years: [2026]
   - name: eurostat_tourism_nuts3
     type: external
-    uri: "https://storage.googleapis.com/dataciviclab-clean/eurostat/eurostat_tourism_nuts3/eurostat_tourism_nuts3_{year}_clean.parquet"
+    bucket: clean
+    pattern: clean_parquet
+    slug: eurostat_tourism_nuts3
+    prefix: "eurostat/"
     years: [2026]
   - name: eurostat_crime_nuts3
     type: external
-    uri: "https://storage.googleapis.com/dataciviclab-clean/eurostat/eurostat_crime_nuts3/eurostat_crime_nuts3_{year}_clean.parquet"
+    bucket: clean
+    pattern: clean_parquet
+    slug: eurostat_crime_nuts3
+    prefix: "eurostat/"
     years: [2026]
   - name: eurostat_gfcf_nuts2
     type: external
-    uri: "https://storage.googleapis.com/dataciviclab-clean/eurostat/eurostat_gfcf_nuts2/eurostat_gfcf_nuts2_{year}_clean.parquet"
+    bucket: clean
+    pattern: clean_parquet
+    slug: eurostat_gfcf_nuts2
+    prefix: "eurostat/"
     years: [2026]
+  # Debito pubblico (uri diretto, path non standard)
   - name: ocpi_serie_storiche
     type: external
     uri: "https://storage.googleapis.com/dataciviclab-clean/debito_pubblico_intelligence/ocpi_serie_storiche/{year}/ocpi_serie_storiche_{year}_clean.parquet"
@@ -49,12 +72,23 @@ support:
     type: external
     uri: "https://storage.googleapis.com/dataciviclab-clean/debito_pubblico_intelligence/eurostat_debito_pil/{year}/eurostat_debito_pil_{year}_clean.parquet"
     years: [2026]
+  # Eurostat mart (standard pattern with repo prefix)
   - name: eurostat_nama10_gdp
     type: external
-    uri: "https://storage.googleapis.com/dataciviclab-mart/eurostat/eurostat_nama10_gdp/mart_expenditure.parquet"
+    bucket: mart
+    pattern: mart_parquet
+    slug: eurostat_nama10_gdp
+    prefix: "eurostat/"
+    table: mart_expenditure
+    years: [2026]
   - name: eurostat_namq10_gdp
     type: external
-    uri: "https://storage.googleapis.com/dataciviclab-mart/eurostat/eurostat_namq10_gdp/mart_quarterly.parquet"
+    bucket: mart
+    pattern: mart_parquet
+    slug: eurostat_namq10_gdp
+    prefix: "eurostat/"
+    table: mart_quarterly
+    years: [2026]
 
 mart:
   tables:
