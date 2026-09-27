@@ -1,47 +1,47 @@
 {
   "metadata_schema_version": 1,
-  "timestamp_utc": "2026-09-22T20:04:20.779681+00:00",
+  "timestamp_utc": "2026-09-26T18:03:36.131786+00:00",
   "toolkit_version": "1.52.0",
   "layer": "mart",
   "dataset": "pil_intelligence",
   "year": 2026,
-  "config_hash": "2650b92430d8c2b08cce8addb54f042ef29a3fab0e1b7abb925578f11d01cfd9",
+  "config_hash": "5fa402ac1fcee31da8458a89b9a731232cc8c3ecf91240c731554037ae82beea",
   "inputs": [],
   "outputs": [
     {
       "file": "mart_hub.parquet",
-      "sha256": "fc7acd7203a5e06320e7c6d85c6a0b1adb29e52eeb5732433768b727ff667a0c",
-      "bytes": 836118
+      "sha256": "197f019923c4e89cb2c78ec347f8290782eb93760518a0432ba0d53c38ab1734",
+      "bytes": 836135
     },
     {
       "file": "mart_settori.parquet",
-      "sha256": "b925ef8570d0451cae252ab9e863f40ad0a566584ab27b9c0d45780045a5318e",
-      "bytes": 128742
+      "sha256": "174f4a9502f82abcb2953d5707a40e8cafa846b3e23667cbda3329e776d5fcac",
+      "bytes": 128720
     },
     {
       "file": "mart_debito_fisco.parquet",
-      "sha256": "cd2e4846b4abc94e40d2640891fe91a69a28bfe7077cf40b04021256f7ba1f5b",
+      "sha256": "c3fb3115189e934169e0f20286e0f021b5322ed59297228cdaba7e0dcee6a976",
       "bytes": 10515
     },
     {
       "file": "mart_trend_integrato.parquet",
-      "sha256": "f461c9457f93333fb8f1395ecbe6c24605b7ca73a7c4c15e811624ce24d0f29a",
-      "bytes": 72354
+      "sha256": "a7c28cbd11eca370f4f3cd733fd26ee3612d70a2207917efe9aab4387a0fe679",
+      "bytes": 72327
     },
     {
       "file": "mart_domanda.parquet",
-      "sha256": "1c7c42be5f693641c3f3107e1c40b43f7eeda61c657e1a45555a452d8453cfe4",
+      "sha256": "40f581e620f1036a02975a2af2f505fa0c52defe3c28901d623cbfce28bae437",
       "bytes": 50210
     },
     {
       "file": "mart_trimestrale.parquet",
-      "sha256": "96e8f47f673db3e27394833a7fc8b15b239181cae69e9607a2fdaab52935522f",
+      "sha256": "b0a7a4c01e691dbe1b95bfdff96208d4da515ecaf5f05e46d23695938590cb08",
       "bytes": 2467
     },
     {
       "file": "mart_settori_trend.parquet",
-      "sha256": "7eebc131ba2870d994e931f6aecfe8b15a9e57889b83a070f64de1aa1c63e3eb",
-      "bytes": 297049
+      "sha256": "5db06adf2d70e2f039c8603ad9df0f1ec8025955d0314253dff0ffcbac8cf6e3",
+      "bytes": 297050
     }
   ],
   "output_paths": [

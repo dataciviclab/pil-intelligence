@@ -6,42 +6,42 @@
 
 WITH pil AS (
     SELECT cast(anno AS integer) AS anno, valore AS pil_nominale_mln
-    FROM read_parquet('https://storage.googleapis.com/dataciviclab-clean/debito_pubblico_intelligence/ocpi_serie_storiche/2026/ocpi_serie_storiche_2026_clean.parquet')
+    FROM read_parquet('{support.ocpi_serie_storiche.path}')
     WHERE serie = 'B'
 ),
 ocpi_debito AS (
     SELECT cast(anno AS integer) AS anno, valore AS ocpi_debito_pil
-    FROM read_parquet('https://storage.googleapis.com/dataciviclab-clean/debito_pubblico_intelligence/ocpi_serie_storiche/2026/ocpi_serie_storiche_2026_clean.parquet')
+    FROM read_parquet('{support.ocpi_serie_storiche.path}')
     WHERE serie = 'D'
 ),
 eurostat_debito AS (
     SELECT anno, debito_pil_pct, stock_mln_eur
-    FROM read_parquet('https://storage.googleapis.com/dataciviclab-clean/debito_pubblico_intelligence/eurostat_debito_pil/2026/eurostat_debito_pil_2026_clean.parquet')
+    FROM read_parquet('{support.eurostat_debito_pil.path}')
     WHERE settore = 'S13'
 ),
 saldo_primario AS (
     SELECT cast(anno AS integer) AS anno, valore AS saldo_primario_pct
-    FROM read_parquet('https://storage.googleapis.com/dataciviclab-clean/debito_pubblico_intelligence/ocpi_serie_storiche/2026/ocpi_serie_storiche_2026_clean.parquet')
+    FROM read_parquet('{support.ocpi_serie_storiche.path}')
     WHERE serie = 'G'
 ),
 interessi AS (
     SELECT cast(anno AS integer) AS anno, valore AS interessi_pct_pil
-    FROM read_parquet('https://storage.googleapis.com/dataciviclab-clean/debito_pubblico_intelligence/ocpi_serie_storiche/2026/ocpi_serie_storiche_2026_clean.parquet')
+    FROM read_parquet('{support.ocpi_serie_storiche.path}')
     WHERE serie = 'I'
 ),
 spread_ig AS (
     SELECT cast(anno AS integer) AS anno, valore AS spread_i_g
-    FROM read_parquet('https://storage.googleapis.com/dataciviclab-clean/debito_pubblico_intelligence/ocpi_serie_storiche/2026/ocpi_serie_storiche_2026_clean.parquet')
+    FROM read_parquet('{support.ocpi_serie_storiche.path}')
     WHERE serie = 'S'
 ),
 crescita_pil AS (
     SELECT cast(anno AS integer) AS anno, valore AS crescita_pil_reale_pct
-    FROM read_parquet('https://storage.googleapis.com/dataciviclab-clean/debito_pubblico_intelligence/ocpi_serie_storiche/2026/ocpi_serie_storiche_2026_clean.parquet')
+    FROM read_parquet('{support.ocpi_serie_storiche.path}')
     WHERE serie = 'N'
 ),
 inflazione AS (
     SELECT cast(anno AS integer) AS anno, valore AS inflazione_pct
-    FROM read_parquet('https://storage.googleapis.com/dataciviclab-clean/debito_pubblico_intelligence/ocpi_serie_storiche/2026/ocpi_serie_storiche_2026_clean.parquet')
+    FROM read_parquet('{support.ocpi_serie_storiche.path}')
     WHERE serie = 'P'
 )
 SELECT
