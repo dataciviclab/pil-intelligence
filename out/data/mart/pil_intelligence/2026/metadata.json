@@ -1,47 +1,47 @@
 {
   "metadata_schema_version": 1,
-  "timestamp_utc": "2026-09-26T18:03:36.131786+00:00",
+  "timestamp_utc": "2026-09-27T15:24:44.173927+00:00",
   "toolkit_version": "1.52.0",
   "layer": "mart",
   "dataset": "pil_intelligence",
   "year": 2026,
-  "config_hash": "5fa402ac1fcee31da8458a89b9a731232cc8c3ecf91240c731554037ae82beea",
+  "config_hash": "63347c9bc22f7990f0ed027e9f48b3bf252ab9a988a710f187bd7140e9adc5f3",
   "inputs": [],
   "outputs": [
     {
       "file": "mart_hub.parquet",
-      "sha256": "197f019923c4e89cb2c78ec347f8290782eb93760518a0432ba0d53c38ab1734",
-      "bytes": 836135
+      "sha256": "132cc4f63e4a9f263bb41b26b9b5e93b43f9583123c9a154b1ca2457981d6627",
+      "bytes": 835988
     },
     {
       "file": "mart_settori.parquet",
-      "sha256": "174f4a9502f82abcb2953d5707a40e8cafa846b3e23667cbda3329e776d5fcac",
-      "bytes": 128720
+      "sha256": "d29df7c100d45a344e12b42117127a0f38d95ccc4a677edab516dd1fb3080ebd",
+      "bytes": 128756
     },
     {
       "file": "mart_debito_fisco.parquet",
-      "sha256": "c3fb3115189e934169e0f20286e0f021b5322ed59297228cdaba7e0dcee6a976",
+      "sha256": "cd2e4846b4abc94e40d2640891fe91a69a28bfe7077cf40b04021256f7ba1f5b",
       "bytes": 10515
     },
     {
       "file": "mart_trend_integrato.parquet",
-      "sha256": "a7c28cbd11eca370f4f3cd733fd26ee3612d70a2207917efe9aab4387a0fe679",
-      "bytes": 72327
+      "sha256": "a5203af7a4abbc58825b88fbabcc4ab711e20525d45c3bdb1da3647c769058cf",
+      "bytes": 72372
     },
     {
       "file": "mart_domanda.parquet",
-      "sha256": "40f581e620f1036a02975a2af2f505fa0c52defe3c28901d623cbfce28bae437",
-      "bytes": 50210
+      "sha256": "fc8f2816161c2e8cba74265ae2700dc1891d07e652aaa129de40a954c426edad",
+      "bytes": 52881
     },
     {
       "file": "mart_trimestrale.parquet",
-      "sha256": "b0a7a4c01e691dbe1b95bfdff96208d4da515ecaf5f05e46d23695938590cb08",
+      "sha256": "96e8f47f673db3e27394833a7fc8b15b239181cae69e9607a2fdaab52935522f",
       "bytes": 2467
     },
     {
       "file": "mart_settori_trend.parquet",
-      "sha256": "5db06adf2d70e2f039c8603ad9df0f1ec8025955d0314253dff0ffcbac8cf6e3",
-      "bytes": 297050
+      "sha256": "7292a6a853d12d4ec4f5f460835f2f68dcb9e73fb71e7ccbc0b7e4794170fe4e",
+      "bytes": 297042
     }
   ],
   "output_paths": [
@@ -353,7 +353,7 @@
       ]
     },
     "mart_domanda": {
-      "row_count": 2040,
+      "row_count": 2091,
       "columns": [
         {
           "name": "year",

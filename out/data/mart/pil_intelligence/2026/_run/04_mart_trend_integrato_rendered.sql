@@ -5,7 +5,7 @@
 
 WITH pil AS (
     SELECT year, geo, value AS pil
-    FROM read_parquet('https://storage.googleapis.com/dataciviclab-clean/eurostat/eurostat_gdp_nuts3/eurostat_gdp_nuts3_2026_clean.parquet')
+    FROM read_parquet('https://storage.googleapis.com/dataciviclab-clean/eurostat/eurostat_gdp_nuts3/2026/eurostat_gdp_nuts3_2026_clean.parquet')
     WHERE unit = 'EUR_HAB' AND nuts_level = 'NUTS3'
 ),
 pil_bounds AS (
@@ -26,7 +26,7 @@ pil_last AS (
 
 gva AS (
     SELECT year, geo, value AS gva
-    FROM read_parquet('https://storage.googleapis.com/dataciviclab-clean/eurostat/eurostat_gva_nuts3/eurostat_gva_nuts3_2026_clean.parquet')
+    FROM read_parquet('https://storage.googleapis.com/dataciviclab-clean/eurostat/eurostat_gva_nuts3/2026/eurostat_gva_nuts3_2026_clean.parquet')
     WHERE unit = 'CP_MEUR' AND nace_r2 = 'TOTAL' AND nuts_level = 'NUTS3'
 ),
 gva_bounds AS (
@@ -47,7 +47,7 @@ gva_last AS (
 
 emp AS (
     SELECT year, geo, value AS emp
-    FROM read_parquet('https://storage.googleapis.com/dataciviclab-clean/eurostat/eurostat_emp_nuts3/eurostat_emp_nuts3_2026_clean.parquet')
+    FROM read_parquet('https://storage.googleapis.com/dataciviclab-clean/eurostat/eurostat_emp_nuts3/2026/eurostat_emp_nuts3_2026_clean.parquet')
     WHERE unit = 'THS' AND wstatus = 'EMP' AND nace_r2 = 'TOTAL' AND nuts_level = 'NUTS3'
 ),
 emp_bounds AS (
@@ -101,7 +101,7 @@ SELECT
     ) AS emp_cagr_pct
 
 FROM pil_bounds b
-JOIN (SELECT DISTINCT geo, geo_label_en, nuts_level, country FROM read_parquet('https://storage.googleapis.com/dataciviclab-clean/eurostat/eurostat_gdp_nuts3/eurostat_gdp_nuts3_2026_clean.parquet') WHERE nuts_level = 'NUTS3') g ON b.geo = g.geo
+JOIN (SELECT DISTINCT geo, geo_label_en, nuts_level, country FROM read_parquet('https://storage.googleapis.com/dataciviclab-clean/eurostat/eurostat_gdp_nuts3/2026/eurostat_gdp_nuts3_2026_clean.parquet') WHERE nuts_level = 'NUTS3') g ON b.geo = g.geo
 LEFT JOIN pil_first pf ON b.geo = pf.geo
 LEFT JOIN pil_last pl  ON b.geo = pl.geo
 LEFT JOIN gva_bounds gvb ON b.geo = gvb.geo

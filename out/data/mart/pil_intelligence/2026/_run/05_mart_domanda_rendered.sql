@@ -20,6 +20,6 @@ SELECT
     CASE WHEN pil > 0 THEN ROUND(import / pil * 100, 1) END AS import_pct_pil,
     CASE WHEN pil > 0 THEN ROUND((export - import) / pil * 100, 1) END AS saldo_commerciale_pct_pil
 
-FROM read_parquet('https://storage.googleapis.com/dataciviclab-mart/eurostat/eurostat_nama10_gdp/mart_expenditure.parquet')
+FROM read_parquet('https://storage.googleapis.com/dataciviclab-mart/eurostat/eurostat_nama10_gdp/2026/mart_expenditure.parquet')
 WHERE unit = 'CP_MEUR'
 ORDER BY year, country
