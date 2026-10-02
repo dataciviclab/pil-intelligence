@@ -1,6 +1,6 @@
 {
   "metadata_schema_version": 1,
-  "timestamp_utc": "2026-09-27T15:24:44.173927+00:00",
+  "timestamp_utc": "2026-10-02T13:39:37.841061+00:00",
   "toolkit_version": "1.52.0",
   "layer": "mart",
   "dataset": "pil_intelligence",
@@ -10,38 +10,38 @@
   "outputs": [
     {
       "file": "mart_hub.parquet",
-      "sha256": "132cc4f63e4a9f263bb41b26b9b5e93b43f9583123c9a154b1ca2457981d6627",
-      "bytes": 835988
+      "sha256": "0482b6f449613378fc547bad1de49264731973bd388950be0a453f72b1b65d01",
+      "bytes": 835703
     },
     {
       "file": "mart_settori.parquet",
-      "sha256": "d29df7c100d45a344e12b42117127a0f38d95ccc4a677edab516dd1fb3080ebd",
-      "bytes": 128756
+      "sha256": "cebe23f5d3ec77bd710690f77771b974dccaa062500bf9c703511cd764af6a1b",
+      "bytes": 128774
     },
     {
       "file": "mart_debito_fisco.parquet",
-      "sha256": "cd2e4846b4abc94e40d2640891fe91a69a28bfe7077cf40b04021256f7ba1f5b",
+      "sha256": "dccc4b7db13f89e460c15dc63e87c73f85b7af1cd9b14d066568aa6fc4960384",
       "bytes": 10515
     },
     {
       "file": "mart_trend_integrato.parquet",
-      "sha256": "a5203af7a4abbc58825b88fbabcc4ab711e20525d45c3bdb1da3647c769058cf",
-      "bytes": 72372
+      "sha256": "1b2258a75bcd26c9af197953a9b0402de1e6948150e4cccc6fe986fb822462c4",
+      "bytes": 72385
     },
     {
       "file": "mart_domanda.parquet",
-      "sha256": "fc8f2816161c2e8cba74265ae2700dc1891d07e652aaa129de40a954c426edad",
+      "sha256": "1f5a5f4b7802edd4e388fc310a3a5d97f887dd6bb6f708bb45332bcb0229fd83",
       "bytes": 52881
     },
     {
       "file": "mart_trimestrale.parquet",
-      "sha256": "96e8f47f673db3e27394833a7fc8b15b239181cae69e9607a2fdaab52935522f",
+      "sha256": "a6c8648fddbead31a3d7c308b7b699552f4e08831b5a95d19fdc1429f05e245d",
       "bytes": 2467
     },
     {
       "file": "mart_settori_trend.parquet",
-      "sha256": "7292a6a853d12d4ec4f5f460835f2f68dcb9e73fb71e7ccbc0b7e4794170fe4e",
-      "bytes": 297042
+      "sha256": "98adbc6292bce13f8153d2596fda98926e509a9ab3d59725a5875f2c11c780c6",
+      "bytes": 297058
     }
   ],
   "output_paths": [
