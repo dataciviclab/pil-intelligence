@@ -32,6 +32,7 @@ dai suoi componenti pubblici e misurare lo scarto:
 | **Provinciale (cross-fonte)** | PIL Eurostat NUTS3 vs PIL ISTAT | scarto medio ponderato ~0,05% (max 2,0%) |
 | **Nazionale (spesa)** | PIL = Consumi + Investimenti + Export − Import | scarto ~0 (2.142.744 vs 2.142.744 M€) |
 | **Nazionale (reddito)** | PIL = Redditi da lavoro + Risultato gestione + Imposte nette | scarto ~0 (2.142.744 vs 2.142.744 M€) |
+| **Imprese (SBS)** | VA = Salari + Contributi sociali + Risultato lordo di gestione | scarto max 0,4 M€ (settori market, ~56% del GVA) |
 
 Limiti dichiarati: a NUTS3 non esistono le scomposizioni per reddito/spesa (solo GVA
 per NACE), quindi il wedge imposte sui prodotti è noto solo a livello nazionale. La
@@ -50,6 +51,7 @@ economia non osservata): per questo si lavora su componenti pubbliche e riconcil
 | `mart_trimestrale` | 776 | PIL trimestrale Italia, 1978–2026 |
 | `mart_riconciliazione` | 2.568 | PIL provinciale: Eurostat vs ISTAT vs identità VA+imposte |
 | `mart_pil_componenti` | 31 | Identità reddito/spesa del PIL Italia (1995–2025) |
+| `mart_imprese_sintesi` | 2.044 | VA imprese (SBS): identità reddito per dimensione e NACE, 2008–2024 |
 
 ## Data Dictionary
 
@@ -109,10 +111,10 @@ Dashboard Streamlit con 6 pagine:
 | Pagina | Contenuto |
 |---|---|
 | **Panoramica** | KPI (PIL pro-capite, produttività, investimento, occupazione, CAGR) + scarto Eurostat/ISTAT |
-| **Territorio** | Treemap province, top/bottom, trend temporale |
+| **Territorio** | Mappa choropleth + treemap province, top/bottom, trend temporale |
 | **Settori** | GVA per macro-settore, evoluzione, heatmap, variazioni composizione |
 | **Domanda** | Composizione PIL, waterfall saldo commerciale, trimestrale |
-| **Riconciliazione** | Identità reddito/spesa nazionale + scarti Eurostat vs ISTAT per provincia |
+| **Riconciliazione** | Identità reddito/spesa nazionale, scarti Eurostat vs ISTAT per provincia, identità VA imprese (SBS) |
 | **Convergenza** | Box plot macro-area, CAGR, scatter convergenza, gap Nord-Sud |
 
 ```bash
@@ -155,7 +157,9 @@ e apre una PR draft col registry aggiornato. I parquet **non** sono committati n
 | Eurostat — `NAMA_10_GDP` | Componenti reddito/spesa del PIL (nazionale) |
 | Eurostat — `NAMQ_10_GDP` | PIL trimestrale Italia |
 | ISTAT — conti territoriali (DCCN_PILT) | PIL, VA, imposte nette per provincia |
+| ISTAT — SBS (statistiche strutturali) | VA, salari, contributi, margini per dimensione d'impresa |
 | Eurostat — `TOUR_OCC_NIN2`, `CRIM_GEN_REG` | Turismo, reati NUTS3 |
+| GISCO / Eurostat | Confini NUTS3 per la mappa (choropleth) |
 
 ## Perché fidarsi
 

@@ -1,9 +1,10 @@
 """05 — Riconciliazione: il PIL si ricompone tra le fonti?"""
 
+import pandas as pd
 import plotly.express as px
 import streamlit as st
 from lab_connectors.formatters import fmt_eur
-from sources import load_componenti, load_riconciliazione
+from sources import load_componenti, load_imprese, load_riconciliazione
 
 st.title("🧮 Riconciliazione PIL")
 
@@ -87,3 +88,37 @@ else:
                    "istat_va_mio", "istat_imposte_mio", "istat_identita_scarto_mio",
                    "eurostat_vs_istat_pil_pct"]].sort_values("istat_pil_mio", ascending=False)
         st.dataframe(show, width="stretch")
+
+st.divider()
+
+# === Imprese: identità reddito del valore aggiunto (SBS) ===
+
+st.subheader("Imprese — il valore aggiunto si ricompone dai componenti")
+st.caption(
+    "ISTAT SBS, settori market: VA = salari + contributi + risultato lordo di gestione. "
+    "Copre ~56% del GVA totale (non è il PIL)."
+)
+
+imp = load_imprese()
+imp_year = int(imp["anno"].max())
+imp_y = imp[imp["anno"] == imp_year]
+tot = imp_y[(imp_y["nace_codice"] == "0010") & (imp_y["size_class"] == "Totale")]
+
+if len(tot):
+    t = tot.iloc[0]
+    i1, i2, i3 = st.columns(3)
+    i1.metric("VA imprese (SBS)", fmt_eur(t["va_mio"] * 1e6, compact=True),
+              help=f"Anno {imp_year} · solo settori market")
+    i2.metric("Scarto identità reddito", f"{imp_y['identita_scarto_mio'].abs().max():,.1f} M€",
+              help="Max |VA − (salari + contributi + margini)| tra i settori")
+    i3.metric("Quota lavoro", f"{t['quota_lavoro_pct']:.1f}%", help="(salari + contributi) / VA")
+
+    by_size = imp_y[(imp_y["nace_codice"] == "0010") & (imp_y["size_class"] != "Totale")].copy()
+    order = ["0-9", "10-19", "20-49", "50-249", "250+"]
+    by_size["size_class"] = pd.Categorical(by_size["size_class"], order, ordered=True)
+    by_size = by_size.sort_values("size_class")
+    fig = px.bar(by_size, x="size_class", y=["quota_lavoro_pct", "quota_capitale_pct"],
+                 barmode="group",
+                 labels={"value": "% del VA", "size_class": "Classe di addetti", "variable": "Quota"})
+    fig.update_layout(height=340, margin=dict(t=10))
+    st.plotly_chart(fig, width="stretch")

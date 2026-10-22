@@ -81,6 +81,13 @@ support:
     pattern: clean_parquet
     slug: istat_pil_territoriale
     years: [2024]
+  # ── ISTAT: statistiche strutturali imprese (VA, COE, GOS per dimensione) ─
+  - name: istat_sbs_imprese
+    type: external
+    bucket: clean
+    pattern: clean_parquet
+    slug: istat_sbs_imprese
+    years: [2024]
   # ── Eurostat mart (componenti domanda + trimestrale) ────────────────────
   - name: eurostat_nama10_gdp
     type: external
@@ -117,6 +124,8 @@ mart:
       sql: "sql/mart_riconciliazione.sql"
     - name: "mart_pil_componenti"
       sql: "sql/mart_pil_componenti.sql"
+    - name: "mart_imprese_sintesi"
+      sql: "sql/mart_imprese_sintesi.sql"
   required_tables:
     - "mart_hub"
     - "mart_settori"
@@ -124,6 +133,7 @@ mart:
     - "mart_domanda"
     - "mart_riconciliazione"
     - "mart_pil_componenti"
+    - "mart_imprese_sintesi"
   validate:
     table_rules:
       mart_hub: { min_rows: 500 }
@@ -132,6 +142,7 @@ mart:
       mart_trend_integrato: { min_rows: 100 }
       mart_riconciliazione: { min_rows: 1000 }
       mart_pil_componenti: { min_rows: 25 }
+      mart_imprese_sintesi: { min_rows: 500 }
 
 validation:
   fail_on_error: true

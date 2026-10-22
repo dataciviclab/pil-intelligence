@@ -34,7 +34,8 @@
         "pil_intelligence__mart_domanda",
         "pil_intelligence__mart_trimestrale",
         "pil_intelligence__mart_riconciliazione",
-        "pil_intelligence__mart_pil_componenti"
+        "pil_intelligence__mart_pil_componenti",
+        "pil_intelligence__mart_imprese_sintesi"
       ]
     }
   ],
@@ -56,6 +57,16 @@
       "location": {
         "type": "gcs",
         "path": "gs://dataciviclab-mart/pil-intelligence/pil_intelligence/2026/mart_hub.parquet",
+        "multi_file": false
+      }
+    },
+    {
+      "slug": "pil_intelligence__mart_imprese_sintesi",
+      "dataset": "pil_intelligence",
+      "table": "mart_imprese_sintesi",
+      "location": {
+        "type": "gcs",
+        "path": "gs://dataciviclab-mart/pil-intelligence/pil_intelligence/2026/mart_imprese_sintesi.parquet",
         "multi_file": false
       }
     },
@@ -129,21 +140,21 @@
       "detail": "anno 2026 — mart: si",
       "action": "",
       "run": {
-        "run_id": "20261022T100142Z_ce88d2d0",
+        "run_id": "20261022T102919Z_2f2faa07",
         "year": 2026,
         "status": "SUCCESS",
         "quality_score": {
           "mart": 100
         },
         "output_rows": {
-          "mart": 77066
+          "mart": 79110
         },
         "output_bytes": {
-          "mart": 1453452
+          "mart": 1518432
         },
-        "started_at": "2026-10-22T10:01:42.385102+00:00",
-        "finished_at": "2026-10-22T10:01:56.201392+00:00",
-        "duration_seconds": 13.816
+        "started_at": "2026-10-22T10:29:19.629808+00:00",
+        "finished_at": "2026-10-22T10:29:33.605795+00:00",
+        "duration_seconds": 13.976
       }
     }
   ],

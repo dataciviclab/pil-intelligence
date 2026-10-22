@@ -8,8 +8,10 @@ from sources import (
     _wavg,
     delta_pct,
     latest_hub_year,
+    load_componenti,
     load_domanda,
     load_hub,
+    load_imprese,
     load_riconciliazione,
     query,
 )
@@ -19,6 +21,8 @@ st.title("📊 Panoramica")
 hub = load_hub()
 domanda = load_domanda()
 ric = load_riconciliazione()
+comp = load_componenti()
+imprese = load_imprese()
 
 latest = latest_hub_year()
 prev = latest - 1
@@ -48,6 +52,28 @@ if len(ric_curr) > 0 and ric_curr["istat_pil_mio"].sum() > 0:
     )
 else:
     scarto_pil = None
+
+# === Riconciliazione del PIL (la tesi) ===
+c_latest = comp.dropna(subset=["pil"]).iloc[-1]
+c_year = int(c_latest["year"])
+imp_year = int(imprese["anno"].max())
+_imp_tot = imprese[(imprese["anno"] == imp_year) & (imprese["nace_codice"] == "0010") & (imprese["size_class"] == "Totale")]
+imp_va = float(_imp_tot.iloc[0]["va_mio"]) if len(_imp_tot) else None
+gva_nat = _nat(latest, "gva_totale_mio")
+scope_pct = (imp_va / gva_nat * 100) if imp_va and gva_nat else None
+_ident_max = ric[ric["year"] == latest]["istat_identita_scarto_mio"].abs().max()
+
+_scarto_txt = f"{scarto_pil:.2f}%" if scarto_pil is not None else "n/d"
+st.markdown(
+    f"Il PIL non è ricostruito da microdati: è un aggregato ufficiale che **riconciliamo** "
+    f"tra fonti indipendenti. Nel {c_year} le identità di contabilità nazionale chiudono sul PIL "
+    f"dichiarato — scarto spesa **{c_latest['spesa_scarto_mio']:+,.0f} M€**, reddito "
+    f"**{c_latest['reddito_scarto_mio']:+,.0f} M€**; tra le 107 province lo scarto medio "
+    f"Eurostat↔ISTAT è **{_scarto_txt}** e l'identità ISTAT (VA+imposte) chiude a "
+    f"**{_ident_max:,.0f} M€**. Il valore aggiunto delle imprese si ricompone da "
+    f"salari+contributi+margini (SBS {imp_year}, copertura {scope_pct:.0f}% del GVA — solo settori market)."
+)
+st.divider()
 
 min_year = int(hub[hub["pil_procapite_eur"].notna()]["year"].min())
 min_pil = _wavg(min_year, "pil_procapite_eur", "popolazione")

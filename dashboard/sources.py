@@ -28,6 +28,7 @@ _TABLES = (
     "mart_trimestrale",
     "mart_riconciliazione",
     "mart_pil_componenti",
+    "mart_imprese_sintesi",
 )
 
 MACRO_SECTORS = ("A", "B-E", "F", "G-J", "K-N", "O-U", "R-U")
@@ -168,3 +169,8 @@ def load_riconciliazione() -> pd.DataFrame:
 @st.cache_data(ttl=3600, show_spinner=False)
 def load_componenti() -> pd.DataFrame:
     return query("SELECT * FROM mart_pil_componenti ORDER BY year")
+
+
+@st.cache_data(ttl=3600, show_spinner=False)
+def load_imprese() -> pd.DataFrame:
+    return query("SELECT * FROM mart_imprese_sintesi ORDER BY anno, nace_codice, size_class")
