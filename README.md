@@ -29,10 +29,20 @@ dai suoi componenti pubblici e misurare lo scarto:
 | Livello | Identità | Esito verificato (2023) |
 |---|---|---|
 | **Provinciale (ISTAT)** | PIL = VA + Imposte nette sui prodotti | scarto max 1 M€ su 107 province |
-| **Provinciale (cross-fonte)** | PIL Eurostat NUTS3 vs PIL ISTAT | scarto medio ponderato ~0,05% (max 2,0%) |
+| **Provinciale (cross-fonte)** | PIL Eurostat NUTS3 vs PIL ISTAT | scarto medio ponderato ~0,09% (max 0,66%), costante entro regione |
 | **Nazionale (spesa)** | PIL = Consumi + Investimenti + Export − Import | scarto ~0 (2.142.744 vs 2.142.744 M€) |
 | **Nazionale (reddito)** | PIL = Redditi da lavoro + Risultato gestione + Imposte nette | scarto ~0 (2.142.744 vs 2.142.744 M€) |
 | **Imprese (SBS)** | VA = Salari + Contributi sociali + Risultato lordo di gestione | scarto max 0,4 M€ (settori market, ~56% del GVA) |
+
+**Cosa dicono i numeri.** Le identità nazionali e quelle ISTAT/SBS chiudono all'esatto
+perché sono componenti dello *stesso* dataset: confermano la coerenza interna della fonte,
+non un controllo indipendente. Il confronto informativo è Eurostat↔ISTAT: lo scarto è
+~0,09% e **costante entro la regione** (es. Liguria +0,66%, Calabria +0,33%, Sicilia +0,17%,
+segno variabile tra regioni), quindi è una **correzione di calibrazione regionale**, non
+rumore provinciale. A livello nazionale le due fonti coincidono allo 0,005%: le differenze
+provinciali sono redistribuzioni dentro lo stesso totale. Nota: Eurostat compila il NUTS3
+italiano *da* ISTAT, quindi le due fonti non sono pienamente indipendenti — lo scarto
+riflette revisioni/metodologia (vintage NUTS, ESA, aggiustamenti regionali).
 
 Limiti dichiarati: a NUTS3 non esistono le scomposizioni per reddito/spesa (solo GVA
 per NACE), quindi il wedge imposte sui prodotti è noto solo a livello nazionale. La
@@ -59,7 +69,8 @@ economia non osservata): per questo si lavora su componenti pubbliche e riconcil
 
 | Colonna | Tipo | Descrizione |
 |---|---|---|
-| `year` / `geo` / `territorio_nome` | — | Anno, codice NUTS3, nome provincia |
+| `year` / `geo` / `territorio_nome` | — | Anno, codice ISTAT, nome provincia |
+| `geo_nuts2021` | str | Codice NUTS 2021 usato per il join (Eurostat). ISTAT usa NUTS 2013: 54 codici rimappati |
 | `eurostat_gdp_mio` | double | PIL Eurostat NUTS3 (MIO_EUR, prezzi correnti) |
 | `eurostat_gva_mio` | double | GVA Eurostat NUTS3 (CP_MEUR, NACE TOTAL) |
 | `istat_pil_mio` | double | PIL ISTAT (conti territoriali) |

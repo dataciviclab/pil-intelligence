@@ -9,8 +9,9 @@ from sources import load_componenti, load_imprese, load_riconciliazione
 st.title("🧮 Riconciliazione PIL")
 
 st.caption(
-    "Tre letture indipendenti dello stesso PIL: identità di contabilità nazionale "
-    "(spesa e reddito), Eurostat NUTS3 e ISTAT conti territoriali."
+    "Tre letture dello stesso PIL: identità di contabilità nazionale (spesa e reddito), "
+    "Eurostat NUTS3 e ISTAT conti territoriali. Nota: Eurostat compila il NUTS3 italiano "
+    "da ISTAT — lo scarto misura revisioni/metodologia, non misure indipendenti."
 )
 
 comp = load_componenti()
@@ -76,6 +77,10 @@ else:
               help="Max |PIL − (VA + imposte nette)| tra le province: atteso ~0")
 
     st.subheader(f"Province con scarto maggiore — {year}")
+    st.caption(
+        "Lo scarto è ~costante entro la regione (correzione di calibrazione regionale): "
+        "a livello nazionale le due fonti coincidono allo 0,005%."
+    )
     top = df.reindex(df["eurostat_vs_istat_pil_pct"].abs().sort_values(ascending=False).index).head(15)
     fig = px.bar(top.sort_values("eurostat_vs_istat_pil_pct"), x="eurostat_vs_istat_pil_pct",
                  y="territorio_nome", orientation="h",
