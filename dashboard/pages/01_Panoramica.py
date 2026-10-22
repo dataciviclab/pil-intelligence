@@ -1,19 +1,28 @@
 """01 — Panoramica: KPI Italia"""
 
-import streamlit as st
 import plotly.express as px
-
-from sources import (
-    load_hub, load_debito, load_domanda, query,
-    latest_hub_year, _nat, _wavg, delta_pct, delta_pp,
-)
+import streamlit as st
 from lab_connectors.formatters import fmt_eur, fmt_num
+from sources import (
+    _nat,
+    _wavg,
+    delta_pct,
+    latest_hub_year,
+    load_componenti,
+    load_domanda,
+    load_hub,
+    load_imprese,
+    load_riconciliazione,
+    query,
+)
 
 st.title("📊 Panoramica")
 
 hub = load_hub()
-debito = load_debito()
 domanda = load_domanda()
+ric = load_riconciliazione()
+comp = load_componenti()
+imprese = load_imprese()
 
 latest = latest_hub_year()
 prev = latest - 1
@@ -34,10 +43,37 @@ tasso_occ_prev = _wavg(prev, "tasso_occupazione_pct", "popolazione")
 gfcf_va = _wavg(latest, "gfcf_su_va_pct", "gva_totale_mio")
 gfcf_va_prev = _wavg(prev, "gfcf_su_va_pct", "gva_totale_mio")
 
-deb_latest = int(debito["anno"].max())
-deb_curr = debito[debito["anno"] == deb_latest]
-deb_prev = debito[debito["anno"] == deb_latest - 1]
 d_curr = domanda[domanda["year"] == latest]
+ric_curr = ric[(ric["year"] == latest) & ric["eurostat_vs_istat_pil_pct"].notna()]
+if len(ric_curr) > 0 and ric_curr["istat_pil_mio"].sum() > 0:
+    scarto_pil = (
+        (ric_curr["eurostat_vs_istat_pil_pct"].abs() * ric_curr["istat_pil_mio"]).sum()
+        / ric_curr["istat_pil_mio"].sum()
+    )
+else:
+    scarto_pil = None
+
+# === Riconciliazione del PIL (la tesi) ===
+c_latest = comp.dropna(subset=["pil"]).iloc[-1]
+c_year = int(c_latest["year"])
+imp_year = int(imprese["anno"].max())
+_imp_tot = imprese[(imprese["anno"] == imp_year) & (imprese["nace_codice"] == "0010") & (imprese["size_class"] == "Totale")]
+imp_va = float(_imp_tot.iloc[0]["va_mio"]) if len(_imp_tot) else None
+gva_nat = _nat(latest, "gva_totale_mio")
+scope_pct = (imp_va / gva_nat * 100) if imp_va and gva_nat else None
+_ident_max = ric[ric["year"] == latest]["istat_identita_scarto_mio"].abs().max()
+
+_scarto_txt = f"{scarto_pil:.2f}%" if scarto_pil is not None else "n/d"
+st.markdown(
+    f"Il PIL non è ricostruito da microdati: è un aggregato ufficiale che **riconciliamo** "
+    f"tra fonti indipendenti. Nel {c_year} le identità di contabilità nazionale chiudono sul PIL "
+    f"dichiarato — scarto spesa **{c_latest['spesa_scarto_mio']:+,.0f} M€**, reddito "
+    f"**{c_latest['reddito_scarto_mio']:+,.0f} M€**; tra le 107 province lo scarto medio "
+    f"Eurostat↔ISTAT è **{_scarto_txt}** e l'identità ISTAT (VA+imposte) chiude a "
+    f"**{_ident_max:,.0f} M€**. Il valore aggiunto delle imprese si ricompone da "
+    f"salari+contributi+margini (SBS {imp_year}, copertura {scope_pct:.0f}% del GVA — solo settori market)."
+)
+st.divider()
 
 min_year = int(hub[hub["pil_procapite_eur"].notna()]["year"].min())
 min_pil = _wavg(min_year, "pil_procapite_eur", "popolazione")
@@ -77,12 +113,8 @@ st.divider()
 
 ctx1, ctx2, ctx3, ctx4 = st.columns(4)
 ctx1.metric("GVA totale", fmt_eur(gva * 1e6, compact=True), delta_pct(gva, gva_prev))
-if len(deb_curr) > 0:
-    dp = deb_curr.iloc[0]["debito_pil_pct"]
-    dp_p = deb_prev.iloc[0]["debito_pil_pct"] if len(deb_prev) > 0 else None
-    ctx2.metric("Debito/PIL", f"{dp:.1f}%", delta_pp(dp, dp_p))
-else:
-    ctx2.metric("Debito/PIL", "—")
+ctx2.metric("Scarto Eurostat/ISTAT", f"{scarto_pil:.2f}%" if scarto_pil is not None else "—",
+            help=f"Anno {latest} · scarto medio ponderato PIL Eurostat vs ISTAT (province)")
 if len(d_curr) > 0:
     ctx3.metric("Export/PIL", f"{d_curr.iloc[0]['export_pct_pil']:.1f}%")
 else:
@@ -126,9 +158,15 @@ with col_right:
 
 st.divider()
 
-st.subheader("Debito/PIL — serie storica")
-d_deb = debito.copy()
-fig = px.line(d_deb, x="anno", y="debito_pil_pct", markers=True,
-              labels={"debito_pil_pct": "Debito/PIL (%)", "anno": "Anno"})
+st.subheader("Riconciliazione PIL — Eurostat vs ISTAT")
+ric_ts = query("""
+    SELECT year,
+           SUM(ABS(eurostat_vs_istat_pil_pct) * istat_pil_mio) / SUM(istat_pil_mio) AS scarto_medio
+    FROM mart_riconciliazione
+    WHERE eurostat_vs_istat_pil_pct IS NOT NULL AND istat_pil_mio IS NOT NULL
+    GROUP BY year ORDER BY year
+""")
+fig = px.line(ric_ts, x="year", y="scarto_medio", markers=True,
+              labels={"scarto_medio": "Scarto medio |Eurostat−ISTAT| (%)", "year": "Anno"})
 fig.update_layout(height=300, margin=dict(t=10))
 st.plotly_chart(fig, width="stretch")

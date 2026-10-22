@@ -3,6 +3,7 @@
 # Streamlit Community Cloud legge solo requirements.txt.
 streamlit>=1.61
 plotly>=5.18
+altair>=6.2
 duckdb>=1.5.3
 pandas>=3.0
-lab-connectors @ git+https://github.com/dataciviclab/lab-connectors.git
+lab-connectors[duckdb] @ git+https://github.com/dataciviclab/lab-connectors.git

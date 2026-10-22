@@ -1,19 +1,22 @@
-root: "out"
+root: "../../out"
 schema_version: 1
 
 dataset:
   name: "pil_intelligence"
   source_id: "dataciviclab_composite"
-  tags: [economia, pil, gdp, intelligence, nuts3, nace, compose]
+  tags: [economia, pil, gdp, intelligence, nuts3, nace, compose, riconciliazione]
   category: economia
-  description: "PIL intelligence hub: indicatori cross per geo x year, GVA per settore, debito/fisco Italia, trend integrato"
+  description: "PIL intelligence: indicatori cross geo x year, GVA per settore, trend, e riconciliazione del PIL tra Eurostat, ISTAT e identità di contabilità nazionale"
   years: [2026]
+  time_coverage:
+    start_year: 1975
+    end_year: 2026
 
-# Mart-only compose: SQL legge direttamente da GCS via support type: external.
-# CI runna toolkit run mart → committa i parquet nel repo. Dashboard legge dal repo.
+# Mart-only compose: gli SQL leggono direttamente da GCS via support type: external.
+# CI: toolkit run mart → sync mart su GCS → registry PR. Dashboard legge da GCS.
 
 support:
-  # Eurostat clean (standard pattern with repo prefix)
+  # ── Eurostat clean (NUTS3/NUTS2) ────────────────────────────────────────
   - name: eurostat_gdp_nuts3
     type: external
     bucket: clean
@@ -63,16 +66,29 @@ support:
     slug: eurostat_gfcf_nuts2
     prefix: "eurostat/"
     years: [2026]
-  # Debito pubblico (uri diretto, path non standard)
-  - name: ocpi_serie_storiche
+  # ── Eurostat clean nazionale (componenti PIL: reddito e spesa) ──────────
+  - name: eurostat_nama10_gdp_clean
     type: external
-    uri: "https://storage.googleapis.com/dataciviclab-clean/debito_pubblico_intelligence/ocpi_serie_storiche/{year}/ocpi_serie_storiche_{year}_clean.parquet"
+    bucket: clean
+    pattern: clean_parquet
+    slug: eurostat_nama10_gdp
+    prefix: "eurostat/"
     years: [2026]
-  - name: eurostat_debito_pil
+  # ── ISTAT: conti territoriali (PIL, VA, imposte nette) ──────────────────
+  - name: istat_pil_territoriale
     type: external
-    uri: "https://storage.googleapis.com/dataciviclab-clean/debito_pubblico_intelligence/eurostat_debito_pil/{year}/eurostat_debito_pil_{year}_clean.parquet"
-    years: [2026]
-  # Eurostat mart (standard pattern with repo prefix)
+    bucket: clean
+    pattern: clean_parquet
+    slug: istat_pil_territoriale
+    years: [2024]
+  # ── ISTAT: statistiche strutturali imprese (VA, COE, GOS per dimensione) ─
+  - name: istat_sbs_imprese
+    type: external
+    bucket: clean
+    pattern: clean_parquet
+    slug: istat_sbs_imprese
+    years: [2024]
+  # ── Eurostat mart (componenti domanda + trimestrale) ────────────────────
   - name: eurostat_nama10_gdp
     type: external
     bucket: mart
@@ -96,29 +112,46 @@ mart:
       sql: "sql/mart_hub.sql"
     - name: "mart_settori"
       sql: "sql/mart_settori.sql"
-    - name: "mart_debito_fisco"
-      sql: "sql/mart_debito_fisco.sql"
+    - name: "mart_settori_trend"
+      sql: "sql/mart_settori_trend.sql"
     - name: "mart_trend_integrato"
       sql: "sql/mart_trend_integrato.sql"
     - name: "mart_domanda"
       sql: "sql/mart_domanda.sql"
     - name: "mart_trimestrale"
       sql: "sql/mart_trimestrale.sql"
-    - name: "mart_settori_trend"
-      sql: "sql/mart_settori_trend.sql"
+    - name: "mart_riconciliazione"
+      sql: "sql/mart_riconciliazione.sql"
+    - name: "mart_pil_componenti"
+      sql: "sql/mart_pil_componenti.sql"
+    - name: "mart_imprese_sintesi"
+      sql: "sql/mart_imprese_sintesi.sql"
+    - name: "mart_convergenza"
+      sql: "sql/mart_convergenza.sql"
   required_tables:
     - "mart_hub"
     - "mart_settori"
-    - "mart_debito_fisco"
+    - "mart_settori_trend"
     - "mart_trend_integrato"
     - "mart_domanda"
+    - "mart_trimestrale"
+    - "mart_riconciliazione"
+    - "mart_pil_componenti"
+    - "mart_imprese_sintesi"
+    - "mart_convergenza"
   validate:
     table_rules:
       mart_hub: { min_rows: 500 }
       mart_settori: { min_rows: 5000 }
-      mart_debito_fisco: { min_rows: 20 }
-      mart_trend_integrato: { min_rows: 100 }
       mart_settori_trend: { min_rows: 5000 }
+      mart_trend_integrato: { min_rows: 100 }
+      mart_riconciliazione: { min_rows: 1000 }
+      mart_pil_componenti: { min_rows: 25 }
+      mart_imprese_sintesi: { min_rows: 500 }
+      mart_convergenza: { min_rows: 20 }
 
 validation:
   fail_on_error: true
+
+output:
+  artifacts: "standard"

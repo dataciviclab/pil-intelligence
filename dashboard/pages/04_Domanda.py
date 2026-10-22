@@ -1,11 +1,10 @@
 """04 — Domanda: composizione PIL per componenti"""
 
-import streamlit as st
 import plotly.express as px
 import plotly.graph_objects as go
-
-from sources import load_domanda, load_domanda_all
-from lab_connectors.formatters import fmt_eur, fmt_num
+import streamlit as st
+from lab_connectors.formatters import fmt_eur
+from sources import load_domanda, load_domanda_all, query
 
 st.title("📦 Composizione della domanda")
 
@@ -127,9 +126,7 @@ st.dataframe(show, width="stretch", hide_index=True)
 st.divider()
 st.subheader("📈 Ultimi trimestri — variazione % su trimestre precedente")
 
-from sources import query
 qt = query("SELECT * FROM mart_trimestrale ORDER BY year DESC, quarter DESC, na_item")
-
 if len(qt) > 0:
     # Pivot: riga = trimestre, colonna = indicatore
     pivot = qt.pivot_table(index=["year", "quarter"], columns="na_item_label_en", values="value", aggfunc="first")

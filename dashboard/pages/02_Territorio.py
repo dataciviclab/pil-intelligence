@@ -1,10 +1,16 @@
 """02 — Territorio: mappa e treemap province"""
 
-import streamlit as st
-import plotly.express as px
+import json
+from pathlib import Path
 
-from sources import load_hub, load_hub_anno, latest_hub_year, macro_area
+import plotly.express as px
+import streamlit as st
 from lab_connectors.formatters import fmt_eur, fmt_num
+from sources import latest_hub_year, load_hub, load_hub_anno, macro_area
+
+_GEO = json.loads(
+    (Path(__file__).parent.parent / "assets" / "nuts3_it.geojson").read_text(encoding="utf-8")
+)
 
 st.title("🗺️ Territorio")
 
@@ -41,6 +47,16 @@ if len(df) == 0:
     st.stop()
 
 df["macro_area"] = df["geo"].apply(macro_area)
+
+# --- Mappa ---
+st.subheader(f"Mappa — {indicator} ({year})")
+fig = px.choropleth(
+    df, geojson=_GEO, locations="geo", featureidkey="properties.NUTS_ID",
+    color=indicator, color_continuous_scale="Blues", hover_name="geo_label_en",
+)
+fig.update_geos(fitbounds="locations", visible=False)
+fig.update_layout(height=550, margin=dict(t=0, b=0, l=0, r=0))
+st.plotly_chart(fig, width="stretch")
 
 # --- Treemap ---
 st.subheader(f"Province per {indicator} — {year}")

@@ -1,9 +1,8 @@
 """03 — Settori: GVA per macro-settore"""
 
-import streamlit as st
 import plotly.express as px
 import plotly.graph_objects as go
-
+import streamlit as st
 from sources import load_settori, load_settori_trend
 
 st.title("🏭 Settori")
