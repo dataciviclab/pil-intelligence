@@ -1,0 +1,155 @@
+{
+  "schema_version": 1,
+  "repo": "pil-intelligence",
+  "source_repo": "dataciviclab/pil-intelligence",
+  "updated_at": "2026-10-22",
+  "datasets": [
+    {
+      "slug": "pil_intelligence",
+      "name": "Pil Intelligence",
+      "description": "PIL intelligence: indicatori cross geo x year, GVA per settore, trend, e riconciliazione del PIL tra Eurostat, ISTAT e identità di contabilità nazionale",
+      "source": "",
+      "source_id": "dataciviclab_composite",
+      "period": {
+        "start": 1975,
+        "end": 2026
+      },
+      "tags": [
+        "economia",
+        "pil",
+        "gdp",
+        "intelligence",
+        "nuts3",
+        "nace",
+        "compose",
+        "riconciliazione"
+      ],
+      "category": "economia",
+      "stage": "incubating",
+      "mart_refs": [
+        "pil_intelligence__mart_hub",
+        "pil_intelligence__mart_settori",
+        "pil_intelligence__mart_settori_trend",
+        "pil_intelligence__mart_trend_integrato",
+        "pil_intelligence__mart_domanda",
+        "pil_intelligence__mart_trimestrale",
+        "pil_intelligence__mart_riconciliazione",
+        "pil_intelligence__mart_pil_componenti"
+      ]
+    }
+  ],
+  "marts": [
+    {
+      "slug": "pil_intelligence__mart_domanda",
+      "dataset": "pil_intelligence",
+      "table": "mart_domanda",
+      "location": {
+        "type": "gcs",
+        "path": "gs://dataciviclab-mart/pil-intelligence/pil_intelligence/2026/mart_domanda.parquet",
+        "multi_file": false
+      }
+    },
+    {
+      "slug": "pil_intelligence__mart_hub",
+      "dataset": "pil_intelligence",
+      "table": "mart_hub",
+      "location": {
+        "type": "gcs",
+        "path": "gs://dataciviclab-mart/pil-intelligence/pil_intelligence/2026/mart_hub.parquet",
+        "multi_file": false
+      }
+    },
+    {
+      "slug": "pil_intelligence__mart_pil_componenti",
+      "dataset": "pil_intelligence",
+      "table": "mart_pil_componenti",
+      "location": {
+        "type": "gcs",
+        "path": "gs://dataciviclab-mart/pil-intelligence/pil_intelligence/2026/mart_pil_componenti.parquet",
+        "multi_file": false
+      }
+    },
+    {
+      "slug": "pil_intelligence__mart_riconciliazione",
+      "dataset": "pil_intelligence",
+      "table": "mart_riconciliazione",
+      "location": {
+        "type": "gcs",
+        "path": "gs://dataciviclab-mart/pil-intelligence/pil_intelligence/2026/mart_riconciliazione.parquet",
+        "multi_file": false
+      }
+    },
+    {
+      "slug": "pil_intelligence__mart_settori",
+      "dataset": "pil_intelligence",
+      "table": "mart_settori",
+      "location": {
+        "type": "gcs",
+        "path": "gs://dataciviclab-mart/pil-intelligence/pil_intelligence/2026/mart_settori.parquet",
+        "multi_file": false
+      }
+    },
+    {
+      "slug": "pil_intelligence__mart_settori_trend",
+      "dataset": "pil_intelligence",
+      "table": "mart_settori_trend",
+      "location": {
+        "type": "gcs",
+        "path": "gs://dataciviclab-mart/pil-intelligence/pil_intelligence/2026/mart_settori_trend.parquet",
+        "multi_file": false
+      }
+    },
+    {
+      "slug": "pil_intelligence__mart_trend_integrato",
+      "dataset": "pil_intelligence",
+      "table": "mart_trend_integrato",
+      "location": {
+        "type": "gcs",
+        "path": "gs://dataciviclab-mart/pil-intelligence/pil_intelligence/2026/mart_trend_integrato.parquet",
+        "multi_file": false
+      }
+    },
+    {
+      "slug": "pil_intelligence__mart_trimestrale",
+      "dataset": "pil_intelligence",
+      "table": "mart_trimestrale",
+      "location": {
+        "type": "gcs",
+        "path": "gs://dataciviclab-mart/pil-intelligence/pil_intelligence/2026/mart_trimestrale.parquet",
+        "multi_file": false
+      }
+    }
+  ],
+  "signals": [
+    {
+      "id": "compose:pil_intelligence",
+      "source_id": "dataciviclab_composite",
+      "status": "ok",
+      "label": "pil_intelligence",
+      "detail": "anno 2026 — mart: si",
+      "action": "",
+      "run": {
+        "run_id": "20261022T100142Z_ce88d2d0",
+        "year": 2026,
+        "status": "SUCCESS",
+        "quality_score": {
+          "mart": 100
+        },
+        "output_rows": {
+          "mart": 77066
+        },
+        "output_bytes": {
+          "mart": 1453452
+        },
+        "started_at": "2026-10-22T10:01:42.385102+00:00",
+        "finished_at": "2026-10-22T10:01:56.201392+00:00",
+        "duration_seconds": 13.816
+      }
+    }
+  ],
+  "codelists": [],
+  "entities": {
+    "entities": {},
+    "bridges": []
+  }
+}

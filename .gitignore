@@ -20,5 +20,5 @@ Thumbs.db
 # Note
 _local/
 
-# Run logs (generati da CI)
-out/data/_runs/
+# Output pipeline (raw/clean/mart + run logs) — non committato, pubblicato su GCS
+out/

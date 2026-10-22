@@ -22,7 +22,7 @@ pages = {
         st.Page("pages/02_Territorio.py", title="Territorio", icon="🗺️"),
         st.Page("pages/03_Settori.py", title="Settori", icon="🏭"),
         st.Page("pages/04_Domanda.py", title="Domanda", icon="📦"),
-        st.Page("pages/05_Debito_Fisco.py", title="Debito / Fisco", icon="💰"),
+        st.Page("pages/05_Riconciliazione.py", title="Riconciliazione", icon="🧮"),
         st.Page("pages/06_Convergenza.py", title="Convergenza", icon="📐"),
     ],
 }

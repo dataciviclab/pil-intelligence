@@ -1,109 +1,106 @@
 # PIL Intelligence
 
-**Come sta realmente l'economia italiana? Le province convergono o divergono?**
+**Il PIL italiano si ricompone tra le fonti? Quanto divergono Eurostat, ISTAT e la contabilità nazionale?**
 
-Sistema di intelligence sul Prodotto Interno Lordo italiano: raccoglie i dati Eurostat (PIL, GVA, occupazione, produttività, investimenti), le serie storiche OCPI e i dati di debito pubblico, li trasforma in 7 mart analitici e li rende interrogabili via dashboard Streamlit.
+Sistema di intelligence sul Prodotto Interno Lordo italiano: compone indicatori
+Eurostat a livello provinciale (PIL, GVA, occupazione, produttività, investimenti),
+e **riconcilia** il PIL tra fonti indipendenti — Eurostat NUTS3, ISTAT conti
+territoriali e identità di contabilità nazionale (produzione, reddito, spesa).
 
-- **Fonte**: [Eurostat SDMX](https://ec.europa.eu/eurostat/web/sdmx-database), [OCPI](https://www.ocpi.it/)
-- **Copertura**: 1861–2025 (debito), 2000–2024 (province), 1978–2026 (trimestrale)
-- **Unità di analisi**: Province NUTS3 (107), Paesi (40), serie storica Italia
-- **Output pubblico**: Dashboard Streamlit + parquet committati nel repo
+- **Fonti**: [Eurostat SDMX](https://ec.europa.eu/eurostat/web/sdmx-database), [ISTAT conti territoriali](https://www.istat.it/)
+- **Copertura**: province 2000–2023 (ISTAT/Eurostat), domanda nazionale 1975–2025, trimestrale 1978–2026
+- **Unità di analisi**: Province NUTS3 (107), Paesi (41), Italia (serie storica)
+- **Output pubblico**: dashboard Streamlit + mart parquet pubblicati su GCS
 
 ## Cosa risponde
 
-1. **Come sta l'economia italiana oggi?** → KPI: PIL pro-capite, produttività, tasso di investimento, occupazione
+1. **Come sta l'economia italiana oggi?** → PIL pro-capite, produttività, tasso di investimento, occupazione
 2. **Quali province crescono e quali restano indietro?** → CAGR PIL/GVA/occupazione, gap Nord-Sud
-3. **Quali settori trainano l'economia?** → GVA per 7 macro-settori NACE, evoluzione, variazioni composizione
-4. **Come si compone la domanda?** → Consumi, investimenti, export, import
-5. **Quanto pesa il debito e cosa lo muove?** → Debito/PIL 1861–2025, spread i-g, saldo primario vs interessi
+3. **Quali settori trainano l'economia?** → GVA per 7 macro-settori NACE, evoluzione, composizione
+4. **Come si compone la domanda?** → Consumi, investimenti, export, import (nazionale, 41 paesi)
+5. **Il PIL si ricompone?** → Eurostat vs ISTAT vs identità contabile, con scarti misurati
+
+## Riconciliazione del PIL
+
+Il PIL non è "ricostruito" da microdati: è un aggregato ufficiale che il Lab legge e
+**verifica** incrociando fonti indipendenti. A ogni livello si può ricomporre il PIL
+dai suoi componenti pubblici e misurare lo scarto:
+
+| Livello | Identità | Esito verificato (2023) |
+|---|---|---|
+| **Provinciale (ISTAT)** | PIL = VA + Imposte nette sui prodotti | scarto max 1 M€ su 107 province |
+| **Provinciale (cross-fonte)** | PIL Eurostat NUTS3 vs PIL ISTAT | scarto medio ponderato ~0,05% (max 2,0%) |
+| **Nazionale (spesa)** | PIL = Consumi + Investimenti + Export − Import | scarto ~0 (2.142.744 vs 2.142.744 M€) |
+| **Nazionale (reddito)** | PIL = Redditi da lavoro + Risultato gestione + Imposte nette | scarto ~0 (2.142.744 vs 2.142.744 M€) |
+
+Limiti dichiarati: a NUTS3 non esistono le scomposizioni per reddito/spesa (solo GVA
+per NACE), quindi il wedge imposte sui prodotti è noto solo a livello nazionale. La
+ricomposizione da microdati d'impresa non è fattibile (dati riservati/a pagamento,
+economia non osservata): per questo si lavora su componenti pubbliche e riconciliazione.
 
 ## Mart
 
 | Mart | Righe | Cosa |
 |---|---|---|
-| `mart_hub` | 32.500 | 107 province × 25 anni: PIL, GVA, occupazione, produttività, GFCF, tasso investimento |
-| `mart_settori` | 18.900 | GVA per 7 macro-settori NACE × province, share % normalizzate a 100% |
-| `mart_settori_trend` | 18.900 | Variazioni share % (pp) e crescita GVA anno su anno per settore |
-| `mart_trend_integrato` | 1.300 | CAGR e delta multi-indicatore per provincia (PIL, GVA, occupazione) |
-| `mart_domanda` | 2.040 | PIL per componenti della domanda (C+I+G+X-M), 40 paesi × 50 anni |
+| `mart_hub` | 32.500 | EU NUTS3 (107 province IT): PIL, GVA, occupazione, produttività, GFCF, turismo, reati |
+| `mart_settori` | 18.900 | GVA per 7 macro-settori NACE × provincia, share % normalizzate |
+| `mart_settori_trend` | 18.900 | Variazioni share (pp) e crescita GVA anno su anno per settore |
+| `mart_trend_integrato` | 1.300 | CAGR multi-indicatore per provincia (PIL, GVA, occupazione) |
+| `mart_domanda` | 2.091 | PIL per componenti della domanda (41 paesi × 1975–2025) |
 | `mart_trimestrale` | 776 | PIL trimestrale Italia, 1978–2026 |
-| `mart_debito_fisco` | 165 | Italia 1861–2025: debito/PIL, saldo primario, interessi, spread i-g |
+| `mart_riconciliazione` | 2.568 | PIL provinciale: Eurostat vs ISTAT vs identità VA+imposte |
+| `mart_pil_componenti` | 31 | Identità reddito/spesa del PIL Italia (1995–2025) |
 
 ## Data Dictionary
 
-### mart_hub (per provincia NUTS3, per anno)
-
-| Colonna | Tipo | Unità | Descrizione | Fonte |
-|---|---|---|---|---|
-| `year` | int | anno | Anno di riferimento | Eurostat |
-| `geo` | str | codice NUTS3 | Codice provincia (es. ITC11 = Torino) | Eurostat |
-| `geo_label_en` | str | — | Nome provincia in inglese | Eurostat |
-| `nuts_level` | str | — | Livello NUTS (sempre "NUTS3") | Eurostat |
-| `country` | str | codice ISO2 | Prefisso paese (sempre "IT") | Eurostat |
-| `nuts_parent_code` | str | codice NUTS2 | Codice regione NUTS2 | Eurostat |
-| `nuts_parent_label_en` | str | — | Nome regione in inglese | Eurostat |
-| `popolazione` | int | persone | Popolazione residente (derivata: MIO_EUR / EUR_HAB) | Eurostat |
-| `pil_procapite_eur` | double | EUR/hab | PIL pro-capite ai prezzi di mercato | Eurostat NAMA_10R_3GDP |
-| `gva_totale_mio` | double | M EUR | Valore aggiunto lordo totale, prezzi correnti | Eurostat NAMA_10R_3GVA |
-| `occupati_migliaia` | double | migliaia | Occupati totali (wstatus=EMP, nace=TOTAL) | Eurostat NAMA_10R_3EMPERS |
-| `produttivita_lavoro_eur` | double | EUR/occupato | Produttività del lavoro nominale | Eurostat NAMA_10R_3NLP |
-| `presenze_turistiche_migliaia` | double | migliaia | Presenze turistiche (I551-I553) | Eurostat TOUR_OCC_NIN2 |
-| `reati_per_100k` | double | ogni 100k ab. | Reati registrati per 100.000 abitanti | Eurostat CRIM_GEN_REG |
-| `gfcf_totale_mio` | double | M EUR | Formazione di capitale lordo, NUTS2, prezzi correnti | Eurostat NAMA_10R_2GFCF |
-| `gva_procapite_eur` | double | EUR/hab | GVA pro-capite (derivato: GVA / popolazione) | Calcolato |
-| `gva_per_lavoratore_eur` | double | EUR/occupato | GVA per occupato (derivato: GVA / occupati) | Calcolato |
-| `tasso_occupazione_pct` | double | % | Tasso di occupazione (derivato: occupati / popolazione × 100) | Calcolato |
-| `gfcf_su_va_pct` | double | % | Tasso di investimento (GFCF NUTS2 / somma GVA NUTS2 × 100) | Calcolato |
-
-**Note metodologiche:**
-- PIL pro-capite e popolazione sono a prezzi correnti (EUR_HAB)
-- GFCF è a livello NUTS2, non NUTS3 — il ratio GFCF/VA è calcolato aggregando il VA delle province NUTS3 nella stessa regione NUTS2
-- La popolazione è derivata da PIL totale / PIL pro-capite, non da un censimento diretto
-
-### mart_settori (per provincia NUTS3, per anno, per macro-settore)
-
-| Colonna | Tipo | Unità | Descrizione |
-|---|---|---|---|
-| `nace_r2` | str | codice NACE | Macro-settore: A, B-E, F, G-J, K-N, O-U, R-U |
-| `nace_r2_label_en` | str | — | Descrizione settore |
-| `gva_valore_mio` | double | M EUR | GVA del settore, prezzi correnti |
-| `gva_totale_mio` | double | M EUR | GVA totale (TOTAL) della provincia |
-| `share_pct` | double | % | Share normalizzata (somma = 100% per geo/year) |
-
-**7 macro-settori NACE:**
-- **A**: Agricoltura, silvicoltura, pesca
-- **B-E**: Industria (senza costruzioni)
-- **F**: Costruzioni
-- **G-J**: Commercio, trasporti, alberghieri, informatica
-- **K-N**: Finanza, immobiliare, professioni, amministrazione
-- **O-U**: PA, difesa, istruzione, salute, servizi sociali, cultura
-- **R-U**: Cultura, intrattenimento, altri servizi, organizzazioni internazionali
-
-**Note:** Le share sono normalizzate per geo/year in modo che sommino esattamente a 100%, perché i macro-settori Eurostat a NUTS3 non sommano esattamente al TOTAL (divergenza strutturale del dato Eurostat).
-
-### mart_trend_integrato (per provincia NUTS3, una riga)
+### mart_riconciliazione (per provincia NUTS3, per anno)
 
 | Colonna | Tipo | Descrizione |
 |---|---|---|
-| `pil_first_year` / `pil_last_year` | int | Primo/ultimo anno con dati PIL |
-| `pil_first` / `pil_last` | double | PIL pro-capite primo/ultimo anno (EUR/HAB, prezzi correnti) |
-| `pil_cagr_pct` | double | CAGR PIL pro-capite (%, periodo pil_first_year–pil_last_year) |
-| `gva_first` / `gva_last` | double | GVA totale primo/ultimo anno (M EUR, prezzi correnti) |
-| `gva_cagr_pct` | double | CAGR GVA totale |
-| `emp_first` / `emp_last` | double | Occupati primo/ultimo anno (migliaia) |
-| `emp_cagr_pct` | double | CAGR occupazione |
-| `years_observed` | int | Numero di anni con dati disponibili |
+| `year` / `geo` / `territorio_nome` | — | Anno, codice NUTS3, nome provincia |
+| `eurostat_gdp_mio` | double | PIL Eurostat NUTS3 (MIO_EUR, prezzi correnti) |
+| `eurostat_gva_mio` | double | GVA Eurostat NUTS3 (CP_MEUR, NACE TOTAL) |
+| `istat_pil_mio` | double | PIL ISTAT (conti territoriali) |
+| `istat_va_mio` | double | Valore aggiunto ISTAT |
+| `istat_imposte_mio` | double | Imposte nette sui prodotti ISTAT |
+| `istat_va_piu_imposte_mio` | double | VA + imposte (ricomposizione) |
+| `istat_identita_scarto_mio` | double | PIL − (VA + imposte): atteso ~0 |
+| `eurostat_vs_istat_pil_pct` | double | Scarto % PIL Eurostat vs ISTAT |
+| `eurostat_vs_istat_va_pct` | double | Scarto % GVA Eurostat vs VA ISTAT |
+| `eurostat_pil_su_va` / `istat_pil_su_va` | double | Wedge PIL/GVA per fonte |
 
-**Attenzione:** I CAGR sono calcolati su valori nominali (prezzi correnti), non a prezzi costanti. Non misurano crescita reale.
+### mart_pil_componenti (per anno, Italia)
 
-### mart_settori_trend (per provincia NUTS3, per anno, per macro-settore)
+Componenti in M€ (prezzi correnti) da Eurostat NAMA_10_GDP: `pil`, `consumi_finali`,
+`formazione_capitale_lorda`, `gfcf`, `export`, `import`, `redditi_lavoro`,
+`risultato_lordo_gestione`, `imposte_nette_produzione_import`, più le colonne derivate
+`spesa_totale_mio` / `reddito_totale_mio` e i relativi `*_scarto_mio`, `quota_lavoro_pct`,
+`quota_capitale_pct`.
 
-| Colonna | Tipo | Unità | Descrizione |
-|---|---|---|---|
-| `share_pct` | double | % | Share normalizzata (vedi mart_settori) |
-| `share_pct_prev` | double | % | Share anno precedente |
-| `share_delta_pp` | double | pp | Variazione share in punti percentuali |
-| `gva_yoy_pct` | double | % | Variazione GVA anno su anno |
+### mart_hub (per provincia NUTS3, per anno)
+
+| Colonna | Unità | Descrizione |
+|---|---|---|
+| `pil_procapite_eur` | EUR/hab | PIL pro-capite ai prezzi di mercato (Eurostat) |
+| `gva_totale_mio` | M EUR | Valore aggiunto lordo totale (prezzi correnti) |
+| `occupati_migliaia` | migliaia | Occupati totali (wstatus=EMP, nace=TOTAL) |
+| `produttivita_lavoro_eur` | EUR/occ | Produttività del lavoro nominale |
+| `gfcf_totale_mio` | M EUR | Formazione di capitale lordo (NUTS2, join su regione) |
+| `popolazione` | persone | Derivata: PIL totale / PIL pro-capite |
+| `presenze_turistiche_migliaia` | migliaia | Presenze turistiche (I551–I553) |
+| `reati_per_100k` | ogni 100k ab. | Reati registrati per 100.000 abitanti |
+| `gva_procapite_eur` / `gva_per_lavoratore_eur` | EUR | Derivate |
+| `tasso_occupazione_pct` / `gfcf_su_va_pct` | % | Derivate |
+
+**Note:** GFCF è a livello NUTS2 (aggregando il VA delle province della stessa regione).
+La popolazione è derivata, non da censimento. I CAGR in `mart_trend_integrato` sono su
+valori nominali, non misurano crescita reale.
+
+### mart_settori / mart_settori_trend
+
+GVA per 7 macro-settori NACE (A, B-E, F, G-J, K-N, O-U, R-U) × provincia. Share
+normalizzate a 100% per geo/year (i macro-settori Eurostat a NUTS3 non sommano
+esattamente al TOTAL). `mart_settori_trend` aggiunge `share_delta_pp` e `gva_yoy_pct`.
 
 ## Dashboard
 
@@ -111,11 +108,11 @@ Dashboard Streamlit con 6 pagine:
 
 | Pagina | Contenuto |
 |---|---|
-| **Panoramica** | 6 KPI (PIL pro-capite, produttività, tasso investimento, occupati, tasso occupazione, CAGR) + 4 contesto |
+| **Panoramica** | KPI (PIL pro-capite, produttività, investimento, occupazione, CAGR) + scarto Eurostat/ISTAT |
 | **Territorio** | Treemap province, top/bottom, trend temporale |
 | **Settori** | GVA per macro-settore, evoluzione, heatmap, variazioni composizione |
 | **Domanda** | Composizione PIL, waterfall saldo commerciale, trimestrale |
-| **Debito / Fisco** | Serie 1861–2025 con eventi annotati, spread i-g |
+| **Riconciliazione** | Identità reddito/spesa nazionale + scarti Eurostat vs ISTAT per provincia |
 | **Convergenza** | Box plot macro-area, CAGR, scatter convergenza, gap Nord-Sud |
 
 ```bash
@@ -125,40 +122,47 @@ cd dashboard && streamlit run app.py
 ## Come funziona
 
 ```
-Eurostat SDMX + OCPI + Eurostat debito → toolkit (clean → mart) → parquet → dashboard
+Eurostat SDMX + ISTAT conti territoriali → toolkit (mart) → parquet → GCS → dashboard
 ```
+
+Il dataset è **mart-only compose**: non ha raw né clean propri. Gli SQL leggono
+direttamente dai parquet clean/mart degli upstream su GCS (`support: type: external`).
 
 ```bash
-# Eseguire il compose (legge da GCS HTTPS)
-toolkit run mart -c dataset.yml -y 2026
+# Compose (legge da GCS HTTPS)
+make compose
+
+# Registry (artifact catalogo)
+make registry-write
 
 # Dashboard
-cd dashboard && streamlit run app.py
+make dashboard
 ```
 
-**Compose** — il dataset è mart-only: non ha raw né clean propri. I SQL leggono direttamente dai parquet clean/mart degli upstream su GCS HTTPS.
-
-**CI** — la workflow `.github/workflows/pipeline.yml` esegue `toolkit run mart` al 2° del mese e commetta i parquet nel repo.
+**CI** — la workflow `.github/workflows/pipeline.yml` usa la pipeline riutilizzabile
+org: esegue `make compose`, sincronizza i mart su `gs://dataciviclab-mart/pil-intelligence/`
+e apre una PR draft col registry aggiornato. I parquet **non** sono committati nel repo.
 
 ## Fonti
 
 | Fonte | Cosa fornisce |
 |---|---|
-| Eurostat — `NAMA_10R_3GDP` | PIL pro-capite NUTS3 (EUR/hab) |
+| Eurostat — `NAMA_10R_3GDP` | PIL pro-capite e totale NUTS3 |
 | Eurostat — `NAMA_10R_3GVA` | GVA per settore NACE × NUTS3 |
 | Eurostat — `NAMA_10R_3EMPERS` | Occupati per settore × NUTS3 |
 | Eurostat — `NAMA_10R_3NLP` | Produttività del lavoro NUTS3 |
 | Eurostat — `NAMA_10R_2GFCF` | Formazione di capitale lordo NUTS2 |
-| Eurostat — `NAMA_10_GDP` | PIL per componenti della domanda (40 paesi) |
+| Eurostat — `NAMA_10_GDP` | Componenti reddito/spesa del PIL (nazionale) |
 | Eurostat — `NAMQ_10_GDP` | PIL trimestrale Italia |
-| OCPI | 26 serie storiche 1861–2025 (debito, PIL, i−g, saldo primario, interessi) |
+| ISTAT — conti territoriali (DCCN_PILT) | PIL, VA, imposte nette per provincia |
+| Eurostat — `TOUR_OCC_NIN2`, `CRIM_GEN_REG` | Turismo, reati NUTS3 |
 
 ## Perché fidarsi
 
-- Fonti ufficiali Eurostat e OCPI
-- Trasformazioni documentate in SQL, parquet committati nel repo
-- Controlli automatici (min_rows su tabelle)
-- Data dictionary esplicito con note metodologiche
+- Fonti ufficiali Eurostat e ISTAT
+- Trasformazioni documentate in SQL; parquet pubblicati su GCS e nel registry
+- Riconciliazione multi-fonte con scarti misurati, non nascosti
+- Data dictionary esplicito con note metodologiche e limiti
 
 ## Licenza
 

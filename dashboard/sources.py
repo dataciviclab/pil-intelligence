@@ -1,4 +1,9 @@
-"""Data sources + aggregation helpers for PIL Intelligence dashboard."""
+"""Data sources + aggregation helpers for PIL Intelligence dashboard.
+
+Legge i mart da GCS in produzione, dai parquet locali in sviluppo
+(pattern condiviso: `out/data/mart/<slug>/<year>/` se presente, altrimenti
+`https://storage.googleapis.com/dataciviclab-mart/...`).
+"""
 
 from __future__ import annotations
 
@@ -7,7 +12,23 @@ from pathlib import Path
 import pandas as pd
 import streamlit as st
 
-_MART_DIR = Path(__file__).parent.parent / "out" / "data" / "mart" / "pil_intelligence" / "2026"
+PREFIX = "pil-intelligence/"
+SLUG = "pil_intelligence"
+YEAR = 2026
+
+_REPO = Path(__file__).parent.parent
+_MART_DIR = _REPO / "out" / "data" / "mart" / SLUG / str(YEAR)
+
+_TABLES = (
+    "mart_hub",
+    "mart_settori",
+    "mart_settori_trend",
+    "mart_trend_integrato",
+    "mart_domanda",
+    "mart_trimestrale",
+    "mart_riconciliazione",
+    "mart_pil_componenti",
+)
 
 MACRO_SECTORS = ("A", "B-E", "F", "G-J", "K-N", "O-U", "R-U")
 
@@ -22,12 +43,23 @@ _MACRO_MAP = {
 
 # --- Connection ---
 
+def _mart_url(table: str) -> str:
+    """Path locale se `out/` è presente, altrimenti URL pubblico GCS."""
+    local = _MART_DIR / f"{table}.parquet"
+    if local.exists():
+        return str(local)
+    from lab_connectors.gcs.paths import https_url
+
+    return https_url("mart", "mart_parquet", slug=SLUG, year=YEAR, table=table, prefix=PREFIX)
+
+
 @st.cache_resource(show_spinner=False)
 def _con():
     import duckdb
+
     con = duckdb.connect(":memory:")
-    for f in _MART_DIR.glob("*.parquet"):
-        con.execute(f"CREATE TABLE {f.stem} AS SELECT * FROM read_parquet('{f}')")
+    for t in _TABLES:
+        con.execute(f"CREATE TABLE {t} AS SELECT * FROM read_parquet('{_mart_url(t)}')")
     return con
 
 
@@ -119,11 +151,6 @@ def load_trend() -> pd.DataFrame:
 
 
 @st.cache_data(ttl=3600, show_spinner=False)
-def load_debito() -> pd.DataFrame:
-    return query("SELECT * FROM mart_debito_fisco ORDER BY anno")
-
-
-@st.cache_data(ttl=3600, show_spinner=False)
 def load_domanda() -> pd.DataFrame:
     return query("SELECT * FROM mart_domanda WHERE country = 'IT' ORDER BY year")
 
@@ -131,3 +158,13 @@ def load_domanda() -> pd.DataFrame:
 @st.cache_data(ttl=3600, show_spinner=False)
 def load_domanda_all() -> pd.DataFrame:
     return query("SELECT * FROM mart_domanda ORDER BY year, country")
+
+
+@st.cache_data(ttl=3600, show_spinner=False)
+def load_riconciliazione() -> pd.DataFrame:
+    return query("SELECT * FROM mart_riconciliazione ORDER BY year, geo")
+
+
+@st.cache_data(ttl=3600, show_spinner=False)
+def load_componenti() -> pd.DataFrame:
+    return query("SELECT * FROM mart_pil_componenti ORDER BY year")

@@ -1,54 +1,31 @@
-# Pipeline — pil-intelligence
-#
-# Mart-only compose: legge da GCS HTTPS, produce parquet, li committa nel repo.
-# Nessun push GCS — il repo è la source of truth per la dashboard.
-#
-# Triggers:
-#   - schedule: 2° del mese 07:00 UTC (dopo eurostat/DPI che runnano il 1°)
-#   - push su main: per aggiornamenti manuali (qualcuno runna locale e pusha)
-#   - workflow_dispatch: manuale
-
 name: Pipeline
 
 on:
-  schedule:
-    - cron: '0 7 2 * *'
-  push:
-    branches: [main]
+  pull_request:
+    types: [closed]
     paths:
-      - 'sql/**'
-      - 'dataset.yml'
+      - "compose/**"
+      - ".github/workflows/pipeline.yml"
+  schedule:
+    # 2° del mese 07:00 UTC (dopo eurostat e debito-pubblico-intelligence, che runnano il 1°)
+    - cron: '0 7 2 * *'
   workflow_dispatch:
 
 concurrency:
-  group: pil-intelligence-pipeline
+  group: pil-intelligence-pipeline-${{ github.event.pull_request.number || github.ref || 'schedule' }}
   cancel-in-progress: false
 
 jobs:
   pipeline:
-    runs-on: ubuntu-latest
+    if: github.event.pull_request.merged == true || github.event_name != 'pull_request'
+    uses: dataciviclab/.github/.github/workflows/pipeline-reusable.yml@main
+    with:
+      repo-slug: "pil-intelligence"
+      run-command: "make compose"
+      sync-pattern: "per-dataset"
+      install-extras: "dev,pipeline"
     permissions:
       contents: write
-
-    steps:
-      - uses: actions/checkout@v7
-
-      - uses: dataciviclab/.github/actions/python-setup@main
-        with:
-          install-extras: "dev,pipeline"
-
-      - name: Run compose
-        run: |
-          pwd && ls dataset.yml && toolkit run mart -c "$GITHUB_WORKSPACE/dataset.yml" -y 2026
-
-      - name: Commit parquet
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add out/
-          if git diff --cached --quiet; then
-            echo "Nessuna modifica — skip commit"
-          else
-            git commit -m "chore: update mart parquet [skip ci]"
-            git push
-          fi
+      pull-requests: write
+      id-token: write
+    secrets: inherit
