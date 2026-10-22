@@ -1,0 +1,32 @@
+name: check
+
+on:
+  pull_request:
+    paths: ["**/*.py", "**/*.yml", "**/*.yaml", "**/*.sql", "**/Makefile"]
+  push:
+    branches: [main]
+    paths: ["**/*.py", "**/*.yml", "**/*.yaml", "**/*.sql", "**/Makefile"]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: dataciviclab/.github/actions/python-setup@main
+        with:
+          install-extras: "dev,pipeline,dashboard"
+        timeout-minutes: 8
+
+      - uses: dataciviclab/.github/actions/python-ci@main
+        with:
+          lint_paths: "dashboard/ tests/"
+          mypy_paths: ""
+          test_dir: "tests"
+          pytest_args: "-v --tb=short"
+
+  validate-config:
+    uses: dataciviclab/.github/.github/workflows/dataset-config-check-reusable.yml@main
+    with:
+      globs: "compose"
+      years: "from-config"

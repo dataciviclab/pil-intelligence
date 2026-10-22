@@ -2,6 +2,7 @@
 """PIL Intelligence · Dashboard Streamlit"""
 
 import streamlit as st
+from lab_connectors.branding import apply_branding
 
 st.set_page_config(
     page_title="PIL Intelligence",
@@ -9,8 +10,6 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded",
 )
-
-from lab_connectors.branding import apply_branding
 
 apply_branding(repo_name="pil-intelligence", repo_url="https://github.com/dataciviclab/pil-intelligence")
 

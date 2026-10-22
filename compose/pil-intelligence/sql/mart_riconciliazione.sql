@@ -68,8 +68,9 @@ SELECT
     -- identità ISTAT: dovrebbe essere ~0 (VA + imposte = PIL)
     ROUND(i.istat_pil_mio - (i.istat_va_mio + i.istat_imposte_mio), 1) AS istat_identita_scarto_mio,
     -- cross-source: Eurostat vs ISTAT
+    -- (nessuna colonna per GVA: Eurostat GVA NUTS3 == ISTAT VA esatto, scarto 0 su tutte
+    --  le righe — Eurostat non ri-stima il valore aggiunto, lo copia da ISTAT)
     ROUND((eu.eurostat_gdp_mio / i.istat_pil_mio - 1) * 100, 2) AS eurostat_vs_istat_pil_pct,
-    ROUND((ev.eurostat_gva_mio / i.istat_va_mio - 1) * 100, 2) AS eurostat_vs_istat_va_pct,
     -- wedge PIL/GVA (imposte nette sui prodotti come quota)
     ROUND(eu.eurostat_gdp_mio / ev.eurostat_gva_mio, 4) AS eurostat_pil_su_va,
     ROUND(i.istat_pil_mio / i.istat_va_mio, 4) AS istat_pil_su_va

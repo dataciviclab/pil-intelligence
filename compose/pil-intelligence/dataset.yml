@@ -131,8 +131,10 @@ mart:
   required_tables:
     - "mart_hub"
     - "mart_settori"
+    - "mart_settori_trend"
     - "mart_trend_integrato"
     - "mart_domanda"
+    - "mart_trimestrale"
     - "mart_riconciliazione"
     - "mart_pil_componenti"
     - "mart_imprese_sintesi"

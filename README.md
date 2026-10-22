@@ -2,10 +2,12 @@
 
 **Il PIL italiano si ricompone tra le fonti? Quanto divergono Eurostat, ISTAT e la contabilità nazionale?**
 
-Sistema di intelligence sul Prodotto Interno Lordo italiano: compone indicatori
-Eurostat a livello provinciale (PIL, GVA, occupazione, produttività, investimenti),
-e **riconcilia** il PIL tra fonti indipendenti — Eurostat NUTS3, ISTAT conti
-territoriali e identità di contabilità nazionale (produzione, reddito, spesa).
+Sistema di intelligence sul PIL italiano: compone indicatori Eurostat a livello
+provinciale (PIL, GVA, occupazione, produttività, investimenti) e **riconcilia**
+il PIL tra fonti pubbliche — Eurostat NUTS3, ISTAT conti territoriali e identità
+di contabilità nazionale (produzione, reddito, spesa). Le fonti non sono
+pienamente indipendenti (Eurostat compila il NUTS3 italiano *da* ISTAT): la
+riconciliazione misura revisioni e metodo, non misure indipendenti.
 
 - **Fonti**: [Eurostat SDMX](https://ec.europa.eu/eurostat/web/sdmx-database), [ISTAT conti territoriali](https://www.istat.it/)
 - **Copertura**: province 2000–2023 (ISTAT/Eurostat), domanda nazionale 1975–2025, trimestrale 1978–2026
@@ -95,8 +97,11 @@ economia non osservata): per questo si lavora su componenti pubbliche e riconcil
 | `istat_va_piu_imposte_mio` | double | VA + imposte (ricomposizione) |
 | `istat_identita_scarto_mio` | double | PIL − (VA + imposte): atteso ~0 |
 | `eurostat_vs_istat_pil_pct` | double | Scarto % PIL Eurostat vs ISTAT |
-| `eurostat_vs_istat_va_pct` | double | Scarto % GVA Eurostat vs VA ISTAT |
 | `eurostat_pil_su_va` / `istat_pil_su_va` | double | Wedge PIL/GVA per fonte |
+
+Nota: Eurostat GVA NUTS3 == ISTAT VA **esatto** (scarto 0 su tutte le righe) — Eurostat
+non ri-stima il valore aggiunto, lo copia da ISTAT. Per questo non esiste una colonna di
+riconciliazione sul GVA.
 
 ### mart_pil_componenti (per anno, Italia)
 
