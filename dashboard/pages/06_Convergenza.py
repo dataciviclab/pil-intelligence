@@ -1,18 +1,50 @@
 """06 — Convergenza: gap Nord-Sud e distribuzione"""
 
-import streamlit as st
 import plotly.express as px
-import pandas as pd
-
-from sources import load_hub, load_trend, macro_area
+import streamlit as st
+from sources import load_convergenza, load_hub, load_trend, macro_area
 
 st.title("📐 Convergenza territoriale")
 
 hub = load_hub()
 trend = load_trend()
+conv = load_convergenza()
+conv = conv[conv["sigma_log"].notna()].copy()
 
 hub["macro_area"] = hub["geo"].apply(macro_area)
 trend["macro_area"] = trend["geo"].apply(macro_area)
+
+# --- σ-convergenza (la tesi) ---
+s0, s_last = conv.iloc[0], conv.iloc[-1]
+s_min = conv.loc[conv["sigma_log"].idxmin()]
+s_max = conv.loc[conv["sigma_log"].idxmax()]
+st.markdown(
+    f"**Le province non convergono da vent'anni.** La dispersione del PIL pro-capite "
+    f"(σ del log) scende da **{s0['sigma_log']:.3f}** ({int(s0['year'])}) a "
+    f"**{s_min['sigma_log']:.3f}** ({int(s_min['year'])}) — convergenza fino al {int(s_min['year'])} — "
+    f"poi **risale a {s_max['sigma_log']:.3f}** ({int(s_max['year'])}) durante la doppia recessione, "
+    f"e solo dopo il COVID torna a **{s_last['sigma_log']:.3f}** ({int(s_last['year'])}). "
+    f"Il gap Nord/Sud resta fermo a **{s_last['gap_nord_sud']:.2f}×** "
+    f"({s0['gap_nord_sud']:.2f}× nel {int(s0['year'])})."
+)
+
+col_a, col_b = st.columns(2)
+with col_a:
+    st.subheader("σ-convergenza")
+    fig = px.line(conv, x="year", y="sigma_log", markers=True,
+                  labels={"sigma_log": "σ del log PIL pro-capite", "year": "Anno"})
+    fig.update_layout(height=340, margin=dict(t=10))
+    st.plotly_chart(fig, width="stretch")
+    st.caption("σ in calo = convergenza · in aumento = divergenza. PIL a prezzi correnti (nominale).")
+with col_b:
+    st.subheader("Gap Nord / Sud")
+    fig = px.line(conv, x="year", y="gap_nord_sud", markers=True,
+                  labels={"gap_nord_sud": "Nord / Sud (×)", "year": "Anno"})
+    fig.update_layout(height=340, margin=dict(t=10))
+    st.plotly_chart(fig, width="stretch")
+    st.caption("Rapporto PIL pro-capite medio Nord-Ovest/Nord-Est vs Sud/Isole.")
+
+st.divider()
 
 years = sorted(hub[hub["pil_procapite_eur"].notna()]["year"].unique())
 year = st.select_slider("Anno", options=years, value=years[-1])

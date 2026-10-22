@@ -18,7 +18,22 @@ territoriali e identità di contabilità nazionale (produzione, reddito, spesa).
 2. **Quali province crescono e quali restano indietro?** → CAGR PIL/GVA/occupazione, gap Nord-Sud
 3. **Quali settori trainano l'economia?** → GVA per 7 macro-settori NACE, evoluzione, composizione
 4. **Come si compone la domanda?** → Consumi, investimenti, export, import (nazionale, 41 paesi)
-5. **Il PIL si ricompone?** → Eurostat vs ISTAT vs identità contabile, con scarti misurati
+5. **Le province convergono o divergono?** → σ-convergenza 2000–2023: **convergenza fino al 2007, poi 12 anni di divergenza**
+6. **Il PIL si ricompone tra le fonti?** → Eurostat vs ISTAT vs identità contabile, con scarti misurati
+
+## Convergenza: la risposta del repo
+
+Le province italiane **non convergono da vent'anni**. La dispersione del PIL pro-capite
+(σ del log) tra le 107 province:
+
+| Periodo | σ | Lettura |
+|---|---|---|
+| 2000 → 2006 | 0,281 → **0,260** | convergenza |
+| 2006 → 2019 | 0,260 → **0,288** | divergenza (doppia recessione) |
+| 2019 → 2023 | 0,288 → **0,278** | lieve ri-convergenza post-COVID |
+
+Il gap Nord/Sud resta fermo a ~1,65–1,70× per 23 anni. **Attenzione**: PIL a prezzi
+correnti (nominale) — non è convergenza reale.
 
 ## Riconciliazione del PIL
 
@@ -62,6 +77,7 @@ economia non osservata): per questo si lavora su componenti pubbliche e riconcil
 | `mart_riconciliazione` | 2.568 | PIL provinciale: Eurostat vs ISTAT vs identità VA+imposte |
 | `mart_pil_componenti` | 31 | Identità reddito/spesa del PIL Italia (1995–2025) |
 | `mart_imprese_sintesi` | 2.044 | VA imprese (SBS): identità reddito per dimensione e NACE, 2008–2024 |
+| `mart_convergenza` | 24 | σ-convergenza e gap Nord/Sud del PIL pro-capite tra le 107 province (2000–2023) |
 
 ## Data Dictionary
 
@@ -126,7 +142,7 @@ Dashboard Streamlit con 6 pagine:
 | **Settori** | GVA per macro-settore, evoluzione, heatmap, variazioni composizione |
 | **Domanda** | Composizione PIL, waterfall saldo commerciale, trimestrale |
 | **Riconciliazione** | Identità reddito/spesa nazionale, scarti Eurostat vs ISTAT per provincia, identità VA imprese (SBS) |
-| **Convergenza** | Box plot macro-area, CAGR, scatter convergenza, gap Nord-Sud |
+| **Convergenza** | σ-convergenza (2000–2023), gap Nord/Sud, box plot macro-area, scatter convergenza |
 
 ```bash
 cd dashboard && streamlit run app.py

@@ -35,11 +35,22 @@
         "pil_intelligence__mart_trimestrale",
         "pil_intelligence__mart_riconciliazione",
         "pil_intelligence__mart_pil_componenti",
-        "pil_intelligence__mart_imprese_sintesi"
+        "pil_intelligence__mart_imprese_sintesi",
+        "pil_intelligence__mart_convergenza"
       ]
     }
   ],
   "marts": [
+    {
+      "slug": "pil_intelligence__mart_convergenza",
+      "dataset": "pil_intelligence",
+      "table": "mart_convergenza",
+      "location": {
+        "type": "gcs",
+        "path": "gs://dataciviclab-mart/pil-intelligence/pil_intelligence/2026/mart_convergenza.parquet",
+        "multi_file": false
+      }
+    },
     {
       "slug": "pil_intelligence__mart_domanda",
       "dataset": "pil_intelligence",
@@ -140,21 +151,21 @@
       "detail": "anno 2026 — mart: si",
       "action": "",
       "run": {
-        "run_id": "20261022T102919Z_2f2faa07",
+        "run_id": "20261022T170908Z_1d5bfb10",
         "year": 2026,
         "status": "SUCCESS",
         "quality_score": {
           "mart": 100
         },
         "output_rows": {
-          "mart": 79110
+          "mart": 79134
         },
         "output_bytes": {
-          "mart": 1518432
+          "mart": 1532793
         },
-        "started_at": "2026-10-22T10:29:19.629808+00:00",
-        "finished_at": "2026-10-22T10:29:33.605795+00:00",
-        "duration_seconds": 13.976
+        "started_at": "2026-10-22T17:09:08.736084+00:00",
+        "finished_at": "2026-10-22T17:09:23.641434+00:00",
+        "duration_seconds": 14.905
       }
     }
   ],

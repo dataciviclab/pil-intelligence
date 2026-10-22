@@ -22,6 +22,7 @@ def test_tables_contract():
         "mart_riconciliazione",
         "mart_pil_componenti",
         "mart_imprese_sintesi",
+        "mart_convergenza",
     }
 
 

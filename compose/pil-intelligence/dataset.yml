@@ -126,6 +126,8 @@ mart:
       sql: "sql/mart_pil_componenti.sql"
     - name: "mart_imprese_sintesi"
       sql: "sql/mart_imprese_sintesi.sql"
+    - name: "mart_convergenza"
+      sql: "sql/mart_convergenza.sql"
   required_tables:
     - "mart_hub"
     - "mart_settori"
@@ -134,6 +136,7 @@ mart:
     - "mart_riconciliazione"
     - "mart_pil_componenti"
     - "mart_imprese_sintesi"
+    - "mart_convergenza"
   validate:
     table_rules:
       mart_hub: { min_rows: 500 }
@@ -143,6 +146,7 @@ mart:
       mart_riconciliazione: { min_rows: 1000 }
       mart_pil_componenti: { min_rows: 25 }
       mart_imprese_sintesi: { min_rows: 500 }
+      mart_convergenza: { min_rows: 20 }
 
 validation:
   fail_on_error: true
